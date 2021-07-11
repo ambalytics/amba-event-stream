@@ -34,6 +34,9 @@ import logging
 
 
 class Event(object):
+    """
+    a representation of an json event to use
+    """
 
     data = {
         "obj_id": None,
