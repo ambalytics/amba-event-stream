@@ -1,3 +1,5 @@
+"""event object"""
+
 import datetime
 import json
 import time
@@ -59,6 +61,7 @@ class Event(object):
     }
 
     def set(self, key, value):
+        """set this value to the property key"""
         self.data[key] = value
 
     def get(self, keys):
@@ -70,10 +73,12 @@ class Event(object):
         # return t
 
     def from_json(self, json_msg):
+        """set this event from json_msg"""
         self.data = json_msg
         # self.data = json.loads(json_msg)
 
     def get_json(self):
+        """return this event as json"""
         return json.dumps(self.data)
 
     def __init__(self):
@@ -130,3 +135,44 @@ class Event(object):
 #    "timestamp":"2019-01-10T17:21:51Z",
 #    "relation_type_id":"discusses"
 # }
+
+# docstring are in rst https://en.wikipedia.org/wiki/ReStructuredText
+#     """Checks if a value is a valid number.
+#
+#     Parameters
+#     ----------
+#     in_value
+#         A variable of any type that we want to check is a number.
+#
+#     Returns
+#     -------
+#     bool
+#         True/False depending on whether it was a number.
+#
+#     Examples
+#     --------
+#     >>> is_number(1)
+#     True
+#     >>> is_number(1.0)
+#     True
+#     >>> is_number("1")
+#     True
+#     >>> is_number("1.0")
+#     True
+#     >>> is_number("Hello")
+#     False
+#
+#     You can also pass more complex objects, these will all be ``False``.
+#
+#     >>> is_number({"hello": "world"})
+#     False
+#     >>> from datetime import datetime
+#     >>> is_number(datetime.now())
+#     False
+#
+#     Even something which contains all numbers will be ``False``, because it is not itself a number.
+#
+#     >>> is_number([1, 2, 3, 4])
+#     False
+#
+#     """
