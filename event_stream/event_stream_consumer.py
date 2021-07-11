@@ -2,7 +2,7 @@ import json
 import logging
 import os
 
-from EventStream.event_stream_base import EventStreamBase
+from .event_stream_base import EventStreamBase
 from kafka import KafkaConsumer, KafkaProducer
 
 from multiprocessing import Process, Queue, current_process, freeze_support, Pool
@@ -33,7 +33,7 @@ class EventStreamConsumer(EventStreamBase):
     state = "raw"
     task_queue = Queue()
     process_number = 4
-    log = "EventStreamConsumer " + str(id) + " "
+    log = "amba EventStreamConsumer " + str(id) + " "
 
     def get_consumer(self):
         logging.warning(self.log + "rt: %s" % self.relation_type)
