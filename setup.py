@@ -20,7 +20,7 @@ setuptools.setup(
     author_email="lukas.jesche.se@gmail.com",
     description="amba-event-stream for kafka",
     long_description=long_description,
-    long_description_content_type="text/md",
+    long_description_content_type="text/markdown",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
