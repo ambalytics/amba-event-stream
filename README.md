@@ -8,6 +8,4 @@ amba analytics event stream python package that connects to kafka to produce/con
 Installation
 ------------
 
-.. code-block:: bash
-
-   pip install amba-event-stream
+`pip install amba-event-stream`
