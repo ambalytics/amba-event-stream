@@ -13,7 +13,7 @@ with open("requirements.txt", "r") as fh:
 
 # setup
 setuptools.setup(
-    name="event-stream",
+    name="amba-event-stream",
     version=versioneer.get_version(),
     cmdclass=versioneer.get_cmdclass(),
     author="Lukas Jesche",
