@@ -33,7 +33,7 @@ class EventStreamConsumer(EventStreamBase):
     state = "raw"
     task_queue = Queue()
     process_number = 4
-    log = "amba EventStreamConsumer " + str(id) + " "
+    log = "a EventStreamConsumer " + str(id) + " "
 
     def get_consumer(self):
         logging.warning(self.log + "rt: %s" % self.relation_type)

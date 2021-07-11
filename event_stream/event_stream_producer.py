@@ -8,7 +8,7 @@ from .event_stream_base import EventStreamBase
 class EventStreamProducer(EventStreamBase):
     # active_producer = {"bla": "stuff"}
     producer = False
-    log = "amba EventStreamProducer"
+    log = "a EventStreamProducer"
 
     def publish(self, event):
         topic_event = self.get_topic_name_event(event)

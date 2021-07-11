@@ -54,7 +54,7 @@ class EventStreamBase(object):
 
     topics = []
 
-    log = "amba EventStreamBase " + str(id) + " "
+    log = "a EventStreamBase " + str(id) + " "
 
     def __init__(self, id_in):
         self.id = id_in
