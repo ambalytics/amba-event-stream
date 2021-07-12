@@ -22,6 +22,7 @@ import time
 # -> event stream problem (handle multiple or just one each?)
 # eventstreap processor process producer1, consumer2,
 
+
 class EventStreamBase(object):
 
     id = time.time()
@@ -29,9 +30,9 @@ class EventStreamBase(object):
     state_separator = "_"
     relation_type_separator = "-"
 
+    kafka_boot_time = 15
     bootstrap_servers = ['kafka:9092']
     group_id = 'worker'
-    topic_name = False
     consumer_timeout_ms = 5000
     api_version = (0, 10)
 

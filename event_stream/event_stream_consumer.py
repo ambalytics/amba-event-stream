@@ -3,7 +3,9 @@ import logging
 import os
 
 from .event_stream_base import EventStreamBase
+
 from kafka import KafkaConsumer, KafkaProducer
+from kafka.vendor import six
 
 from multiprocessing import Process, Queue, current_process, freeze_support, Pool
 
@@ -28,22 +30,37 @@ from multiprocessing import Process, Queue, current_process, freeze_support, Poo
 # eventstreap processor process producer1, consumer2,
 
 class EventStreamConsumer(EventStreamBase):
-
     relation_type = ''
     state = "raw"
+    topics = False
+
     task_queue = Queue()
     process_number = 4
     log = "a EventStreamConsumer " + str(id) + " "
 
     def get_consumer(self):
         logging.warning(self.log + "rt: %s" % self.relation_type)
-        if not self.topic_name:
-            self.topic_name = self.get_topic_name(state=self.state, relation_type=self.relation_type)
-        # self.topic_name = 'tweets'
-        logging.warning(self.log + "get consumer for topic: %s" % self.topic_name)
-        return KafkaConsumer(self.topic_name, group_id=self.group_id,
-                             bootstrap_servers=self.bootstrap_servers, api_version=self.api_version, consumer_timeout_ms=self.consumer_timeout_ms)
 
+        if self.state == 'all':
+            self.topics = self.build_topic_list()
+
+        if isinstance(self.state, six.string_types):
+            self.state = [self.state]
+
+        if isinstance(self.relation_type, six.string_types):
+            self.relation_type = [self.relation_type]
+
+        if not self.topics:
+            self.topics = []
+            for state in self.state:
+                for relation_type in self.relation_type:
+                    self.topics.append(self.get_topic_name(state=state, relation_type=relation_type))
+
+        # self.topic_name = 'tweets'
+        logging.warning(self.log + "get consumer for topic: %s" % self.topics)
+        return KafkaConsumer(self.topics, group_id=self.group_id,
+                             bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
+                             consumer_timeout_ms=self.consumer_timeout_ms)
 
     def consume(self):
         logging.warning(self.log + "Consumer 1")
@@ -70,7 +87,10 @@ class EventStreamConsumer(EventStreamBase):
                 break
 
         if self.running:
-            self.consume()
+            return self.consume()
+
+        pool.close()
+        logging.warning(self.log + "Consumer shutdown")
 
     def worker(self, queue):
         logging.debug(self.log + "working %s" % os.getpid())
@@ -86,6 +106,7 @@ class EventStreamConsumer(EventStreamBase):
         self.running = False
         logging.warning(self.log + 'stop running consumer')
 
+
 if __name__ == '__main__':
-    e = EventStreamConsumer()
+    e = EventStreamConsumer(1)
     e.consume()
