@@ -63,7 +63,8 @@ class EventStreamConsumer(EventStreamBase):
         self.consumer = KafkaConsumer(group_id=self.group_id,
                              bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
                              consumer_timeout_ms=self.consumer_timeout_ms)
-        self.consumer.subscribe(self.topics)
+        for topic in self.topics:
+            self.consumer.subscribe(topic)
 
     def consume(self):
         logging.warning(self.log + "consume")
