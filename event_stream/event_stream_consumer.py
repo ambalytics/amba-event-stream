@@ -33,12 +33,13 @@ class EventStreamConsumer(EventStreamBase):
     relation_type = ''
     state = "raw"
     topics = False
+    consumer = False
 
     task_queue = Queue()
     process_number = 4
-    log = "a EventStreamConsumer " + str(id) + " "
+    log = "EventStreamConsumer " + str(id) + " "
 
-    def get_consumer(self):
+    def create_consumer(self):
         logging.warning(self.log + "rt: %s" % self.relation_type)
 
         if self.state == 'all':
@@ -51,22 +52,25 @@ class EventStreamConsumer(EventStreamBase):
             self.relation_type = [self.relation_type]
 
         if not self.topics:
-            self.topics = []
+            self.topics = list()
             for state in self.state:
                 for relation_type in self.relation_type:
                     self.topics.append(self.get_topic_name(state=state, relation_type=relation_type))
 
         # self.topic_name = 'tweets'
         logging.warning(self.log + "get consumer for topic: %s" % self.topics)
-        return KafkaConsumer(self.topics, group_id=self.group_id,
+        # consumer.topics()
+        self.consumer = KafkaConsumer(group_id=self.group_id,
                              bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
                              consumer_timeout_ms=self.consumer_timeout_ms)
+        self.consumer.subscribe(self.topics)
 
     def consume(self):
-        logging.warning(self.log + "Consumer 1")
+        logging.warning(self.log + "consume")
         self.running = True
 
-        consumer = self.get_consumer()
+        if not self.consumer:
+            self.create_consumer()
 
         # Start worker processes
         # for i in range(self.process_number):
@@ -75,13 +79,13 @@ class EventStreamConsumer(EventStreamBase):
 
         while self.running:
             try:
-                for msg in consumer:
+                for msg in self.consumer:
                     logging.warning(self.log + 'msg in consumer ')
                     # logging.warning('msg in consumer %s' % msg.value)
                     self.task_queue.put(json.loads(msg.value.decode('utf-8')))
 
             except Exception as exc:
-                consumer.close()
+                self.consumer.close()
                 logging.error(self.log + 'stream Consumer generated an exception: %s' % exc)
                 logging.warning(self.log + "Consumer closed")
                 break
