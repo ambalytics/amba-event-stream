@@ -39,7 +39,7 @@ class EventStreamBase(object):
     running = False
 
     config_states = {
-        'raw': {
+        'unlinked': {
             'own_topic': ['discusses', 'crossref']
         },
         'linked': {

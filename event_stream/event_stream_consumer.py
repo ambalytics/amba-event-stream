@@ -31,7 +31,7 @@ from multiprocessing import Process, Queue, current_process, freeze_support, Poo
 
 class EventStreamConsumer(EventStreamBase):
     relation_type = ''
-    state = "raw"
+    state = "unlinked"
     topics = False
     consumer = False
 
