@@ -90,8 +90,8 @@ class EventStreamBase(object):
         result = self.event_string + self.state_separator + state
 
         # if a relation type is set and has is own topic
-        logging.warning('rt %s, c %s' %(relation_type, self.config_states[state]['own_topic']))
-        if relation_type != '' and relation_type in self.config_states[state]['own_topic']:
+        # logging.warning('rt %s, c %s' %(relation_type, self.config_states[state]['own_topic']))
+        if relation_type != '' and 'own_topic' in self.config_states[state] and relation_type in self.config_states[state]['own_topic']:
             result = result + self.relation_type_separator + relation_type
         return result
 
