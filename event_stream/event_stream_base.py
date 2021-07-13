@@ -1,6 +1,8 @@
 import logging
 import time
-#from kafka import KafkaConsumer, KafkaProducer
+
+
+# from kafka import KafkaConsumer, KafkaProducer
 
 
 # idee
@@ -24,7 +26,6 @@ import time
 
 
 class EventStreamBase(object):
-
     id = time.time()
     event_string = "events"
     state_separator = "_"
@@ -83,24 +84,17 @@ class EventStreamBase(object):
             result = result + self.relation_type_separator + relation_type
         return result
 
-
     def get_topic_name_event(self, event):
         state = event.get('state')
         relation_type = event.get('relation_type')
-        result = self.event_string + self.state_separator + state
-
-        # if a relation type is set and has is own topic
-        # logging.warning('rt %s, c %s' %(relation_type, self.config_states[state]['own_topic']))
-        if relation_type != '' and 'own_topic' in self.config_states[state] and relation_type in self.config_states[state]['own_topic']:
-            result = result + self.relation_type_separator + relation_type
-        return result
-
+        return self.get_topic_name(state, relation_type)
 
     def get_topic_name(self, state, relation_type=''):
         result = self.event_string + self.state_separator + state
 
         # if a relation type is set and has is own topic
-        if relation_type != '' and 'own_topic' in self.config_states[state] and relation_type in self.config_states[state]['own_topic']:
+        if relation_type != '' and 'own_topic' in self.config_states[state] and relation_type in \
+                self.config_states[state]['own_topic']:
             result = result + self.relation_type_separator + relation_type
         return result
 
