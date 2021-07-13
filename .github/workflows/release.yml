@@ -26,8 +26,8 @@ jobs:
         shell: bash -l {0}
         run: python setup.py sdist bdist_wheel
 
-      - name: info
-      - run: |
+      - name: github info
+        run: |
           echo "ref ${{ github.ref }}"
           echo "event_name ${{ github.event_name }}"
 
