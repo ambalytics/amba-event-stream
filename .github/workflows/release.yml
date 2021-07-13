@@ -2,7 +2,8 @@ name: Build distribution
 
 on:
   push:
-    tags
+    tags:
+      - *
 
 jobs:
   test:
