@@ -2,8 +2,7 @@ name: Build distribution
 
 on:
   push:
-    branches:
-      - 'main'
+    tags
 
 jobs:
   test:
@@ -38,3 +37,4 @@ jobs:
         with:
           user: __token__
           password: ${{ secrets.PYPI_PASSWORD }}
+
