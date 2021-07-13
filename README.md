@@ -1,13 +1,17 @@
 # amba-event-stream
 
+[![PyPI][]][1]
 
-  ![PyPI](https://img.shields.io/pypi/v/amba-event-stream)
+  [PyPI]: https://img.shields.io/pypi/v/amba-event-stream
+  [1]: https://pypi.org/project/amba-event-stream/
 
 amba analytics event stream python package that connects to kafka to produce/connect or process events.
 
 # Installation
 
-`pip install amba-event-stream`
+``` bash
+pip install amba-event-stream
+```
 
 # Releasing
 
