@@ -63,11 +63,15 @@ class EventStreamConsumer(EventStreamBase):
         self.consumer = KafkaConsumer(group_id=self.group_id,
                              bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
                              consumer_timeout_ms=self.consumer_timeout_ms)
+
         for topic in self.topics:
+            logging.warning(self.log + "consumer subscribe: %s" % topic)
             self.consumer.subscribe(topic)
 
+        logging.warning(self.log + "consumer subscribed to: %s" % self.consumer.topics())
+
     def consume(self):
-        logging.warning(self.log + "consume")
+        logging.warning(self.log + "start consume")
         self.running = True
 
         if not self.consumer:
@@ -81,7 +85,7 @@ class EventStreamConsumer(EventStreamBase):
         while self.running:
             try:
                 for msg in self.consumer:
-                    logging.warning(self.log + 'msg in consumer ')
+                    logging.debug(self.log + 'msg in consumer ')
                     # logging.warning('msg in consumer %s' % msg.value)
                     self.task_queue.put(json.loads(msg.value.decode('utf-8')))
 
