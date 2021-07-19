@@ -241,7 +241,7 @@ To upgrade your project to a new release of Versioneer, do the following:
 
 This tool is designed to make it easily extended to other version-control
 systems: all VCS-specific components are in separate directories like
-src/git/ . The top-level `versioneer.py` script is assembled from these
+app/git/ . The top-level `versioneer.py` script is assembled from these
 components by running make-versioneer.py . In the future, make-versioneer.py
 will take a VCS name as an argument, and will construct a version of
 `versioneer.py` that is specific to the given VCS. It might also take the
@@ -1690,7 +1690,7 @@ a section like:
  [versioneer]
  VCS = git
  style = pep440
- versionfile_source = src/myproject/_version.py
+ versionfile_source = app/myproject/_version.py
  versionfile_build = myproject/_version.py
  tag_prefix =
  parentdir_prefix = myproject-
