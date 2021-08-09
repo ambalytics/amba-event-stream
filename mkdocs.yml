@@ -1,0 +1,13 @@
+site_name: Amba Event Stream
+site_description: 'documentation for amba event stream'
+site_author: 'Lukas Jesche'
+docs_dir: docs/
+repo_name: 'ambalytics/amba-event-stream'
+repo_url: 'https://github.com/ambalytics/amba-event-streame'
+nav:
+    - Home: index.md
+theme:
+  name: 'material'
+plugins:
+  - search
+  - mkdocstrings

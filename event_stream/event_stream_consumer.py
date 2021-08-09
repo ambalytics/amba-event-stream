@@ -95,6 +95,7 @@ class EventStreamConsumer(EventStreamBase):
                 logging.warning(self.log + "Consumer closed")
                 break
 
+        # keep alive
         if self.running:
             return self.consume()
 

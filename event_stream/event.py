@@ -50,7 +50,7 @@ class Event(object):
             "issued": None,
             "author": {
                 "url": None
-             },
+            },
             "original-tweet-url": None,
             "original-tweet-author": None,
             "alternative-id": None,
@@ -64,11 +64,25 @@ class Event(object):
     }
 
     def set(self, key, value):
-        """set this value to the property key"""
+        """this will set a value to a given key in the data of this event
+        this is equal to data['key'] = value
+        if setting nested properties use data directly
+
+        Arguments:
+            key: a valid key for the data of this event
+            value: the value to store
+        """
         self.data[key] = value
 
-    def get(self, keys):
-        return self.data[keys]
+    def get(self, key):
+        """this will get a value to a given key in the data of this event
+        this is equal to data['key']
+        if access to nested properties is needed use data directly
+
+        Arguments:
+            key: a valid key for the data of this event
+        """
+        return self.data[key]
         # t = self.data
         # # todo check if key exist
         # for key in keys:
@@ -76,106 +90,23 @@ class Event(object):
         # return t
 
     def from_json(self, json_msg):
-        """set this event from json_msg"""
+        """set this event from json_msg
+
+        Arguments:
+            json_msg: loaded json
+        """
         self.data = json_msg
         # self.data = json.loads(json_msg)
 
     def get_json(self):
-        """return this event as json"""
+        """return this event as json
+            equal to json.dumps(data)
+        """
         return json.dumps(self.data)
 
     def __init__(self):
         # "timestamp":"2019-01-10T17:21:51Z",
         self.set('timestamp', '{0:%Y-%m-%dT%H:%M:%SZ}'.format(datetime.datetime.now()))
 
-    # def __init__(self, subj_id, relation_type, obj_id, occurred_at, id, source_id, source_token):
-    #     self.sub_id = subj_id
-    #     self.relation_type = relation_type
-    #     self.obj_id = obj_id
-    #     self.occurred_at = occurred_at
-    #     self.id = id
-    #     self.source_id = source_id
-    #     self.source_tokend = source_token
-    #     self.timestamp = round(time.time() * 1000)
-    #     logging.warning(self)
-
-    # def __init__(self, subj_id, relation_type, obj_id, occurred_at, id, source_id, source_token):
-    #     self.json_data = json.loads(self.json_data)
-    #     self.json_data['subj_id'] = subj_id
-    #     self.json_data['relation_type'] = relation_type
-    #     self.json_data['obj_id'] = obj_id
-    #     self.json_data['occurred_at'] = occurred_at
-    #     self.json_data['id'] = id
-    #     self.json_data['source_id'] = source_id
-    #     self.json_data['source_tokend'] = source_token
-    #     self.json_data['timestamp'] = round(time.time() * 1000)
-    #     logging.warning(self.json_data)
-
-# {
-#
-#  "obj_id":"https://doi.org/10.1039/c8ee03134g",
-#  "occurred_at":"2019-01-10T17:12:26Z",
-#  "subj_id":"twitter://status?id=1083411254788739073",
-#  "id":"29ffcda3-c9bc-47ca-a916-dcde1e2023fa",
-#  "action":"add",
-#  "subj":{
-#     "pid":"twitter://status?id=1083411254788739073",
-#     "url":"twitter://status?id=1083411254788739073",
-#     "title":"Tweet 1083411254788739073",
-#     "issued":"2019-01-10T17:12:26.000Z",
-#     "author":{
-#       "url":"twitter://user?screen_name=pmherder"},
-#       "original-tweet-url":"twitter://status?id=1083379011089133568",
-#       "original-tweet-author":"twitter://user?screen_name=TomBurdyny",
-#       "alternative-id":"1083411254788739073"
-#       "data"
-#     },
-#  "source_id":"twitter",
-#  "obj":{
-#    "pid":"https://doi.org/10.1039/c8ee03134g",
-#     "data":
-#    },
-#    "timestamp":"2019-01-10T17:21:51Z",
-#    "relation_type_id":"discusses"
-# }
-
-# docstring are in rst https://en.wikipedia.org/wiki/ReStructuredText
-#     """Checks if a value is a valid number.
-#
-#     Parameters
-#     ----------
-#     in_value
-#         A variable of any type that we want to check is a number.
-#
-#     Returns
-#     -------
-#     bool
-#         True/False depending on whether it was a number.
-#
-#     Examples
-#     --------
-#     >>> is_number(1)
-#     True
-#     >>> is_number(1.0)
-#     True
-#     >>> is_number("1")
-#     True
-#     >>> is_number("1.0")
-#     True
-#     >>> is_number("Hello")
-#     False
-#
-#     You can also pass more complex objects, these will all be ``False``.
-#
-#     >>> is_number({"hello": "world"})
-#     False
-#     >>> from datetime import datetime
-#     >>> is_number(datetime.now())
-#     False
-#
-#     Even something which contains all numbers will be ``False``, because it is not itself a number.
-#
-#     >>> is_number([1, 2, 3, 4])
-#     False
-#
-#     """
+    def __str__(self):
+        return 'Event ' + self.data['id'] + ' doi ' + self.data['obj_id']
