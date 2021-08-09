@@ -3,11 +3,14 @@ site_description: 'documentation for amba event stream'
 site_author: 'Lukas Jesche'
 docs_dir: docs/
 repo_name: 'ambalytics/amba-event-stream'
-repo_url: 'https://github.com/ambalytics/amba-event-streame'
+repo_url: 'https://github.com/ambalytics/amba-event-stream'
 nav:
     - Home: index.md
     - Code Reference:
-      - Workflow: code_ref.md
+      - event: event_ref.md
+      - event stream base: event_stream_base_ref.md
+      - event stream consumer: event_stream_consumer_ref.md
+      - event stream producer: event_stream_producer_ref.md
 
 theme:
   name: material
@@ -19,6 +22,3 @@ theme:
 plugins:
   - search
   - mkdocstrings
-  - gen-files:
-      scripts:
-        - docs/gen_doc_stubs.py
