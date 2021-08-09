@@ -1,1 +1,1 @@
-::: event_stream
+::: event_stream.event

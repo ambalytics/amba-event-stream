@@ -6,8 +6,9 @@ repo_name: 'ambalytics/amba-event-stream'
 repo_url: 'https://github.com/ambalytics/amba-event-streame'
 nav:
     - Home: index.md
-theme:
-  name: 'material'
+    - Code Reference:
+      - Workflow: code_ref.md
+
 plugins:
   - search
   - mkdocstrings
