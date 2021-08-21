@@ -6,10 +6,18 @@ from .event_stream_base import EventStreamBase
 
 
 class EventStreamProducer(EventStreamBase):
+    """produce messages for kafka
+
+    """
     # active_producer = {"bla": "stuff"}
     producer = False
     log = "EventStreamProducer"
 
+    """publish an event
+
+    Arguments:
+        event: the event which should be shared
+    """
     def publish(self, event):
         topic_event = self.get_topic_name_event(event)
 
@@ -22,5 +30,7 @@ class EventStreamProducer(EventStreamBase):
         self.producer.flush()
         logging.warning(self.log + 'Message published successfully to topic %s' % topic_event)
 
+    """create the producer
+    """
     def create_producer(self):
         self.producer = KafkaProducer(bootstrap_servers=self.bootstrap_servers, api_version=self.api_version)

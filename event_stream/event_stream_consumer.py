@@ -30,6 +30,10 @@ from multiprocessing import Process, Queue, current_process, freeze_support, Poo
 # eventstreap processor process producer1, consumer2,
 
 class EventStreamConsumer(EventStreamBase):
+    """
+    a base consumer class for consuming from kafka
+    uses multiprocessing to share workload
+    """
     relation_type = ''
     state = "unlinked"
     topics = False
@@ -39,6 +43,9 @@ class EventStreamConsumer(EventStreamBase):
     process_number = 4
     log = "EventStreamConsumer " + str(id) + " "
 
+    """create the consumer, connect to kafka
+
+    """
     def create_consumer(self):
         logging.warning(self.log + "rt: %s" % self.relation_type)
 
@@ -70,6 +77,9 @@ class EventStreamConsumer(EventStreamBase):
 
         logging.warning(self.log + "consumer subscribed to: %s" % self.consumer.topics())
 
+    """consume messages and add them to a queue to share with the worker processes
+
+    """
     def consume(self):
         logging.warning(self.log + "start consume")
         self.running = True
@@ -102,6 +112,11 @@ class EventStreamConsumer(EventStreamBase):
         pool.close()
         logging.warning(self.log + "Consumer shutdown")
 
+    """worker function to get items from the queue
+
+    Arguments:
+        queue: the queue
+    """
     def worker(self, queue):
         logging.debug(self.log + "working %s" % os.getpid())
         while True:
@@ -109,9 +124,16 @@ class EventStreamConsumer(EventStreamBase):
             logging.debug(self.log + "got %s item" % os.getpid())
             self.on_message(item)
 
+    """the on message function to be implemented in own classes 
+
+    Arguments:
+        json_msg: the message to do stuff with
+    """
     def on_message(self, json_msg):
         logging.warning(self.log + "on message")
 
+    """stop the consumer
+    """
     def stop(self):
         self.running = False
         logging.warning(self.log + 'stop running consumer')

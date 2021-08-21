@@ -26,6 +26,10 @@ import time
 
 
 class EventStreamBase(object):
+    """
+    a base class for connecting to kafka
+    """
+
     id = time.time()
     event_string = "events"
     state_separator = "_"
@@ -62,6 +66,9 @@ class EventStreamBase(object):
         self.id = id_in
         self.log = self.log + str(self.id) + ": "
 
+    """build a list of topics from the configs
+
+    """
     def build_topic_list(self):
         result = []
 
@@ -77,6 +84,12 @@ class EventStreamBase(object):
         logging.warning("%s current topics for events: %s" % (self.log, self.topics))
         return result
 
+    """build the name of the topic for a given state
+
+    Arguments:
+        state: the state to get the topic for
+        relation_type: optional, in case it has it's own topic
+    """
     def build_topic_name(self, state, relation_type=''):
         result = self.event_string + self.state_separator + state
 
@@ -84,11 +97,22 @@ class EventStreamBase(object):
             result = result + self.relation_type_separator + relation_type
         return result
 
+    """this will resolve an event to it's respected kafka topic
+
+    Arguments:
+        key: the event to be resolved
+    """
     def get_topic_name_event(self, event):
         state = event.get('state')
         relation_type = event.get('relation_type')
         return self.get_topic_name(state, relation_type)
 
+    """get the name of the topic for a given state
+
+    Arguments:
+        state: the state to get the topic for
+        relation_type: optional, in case it has it's own topic
+    """
     def get_topic_name(self, state, relation_type=''):
         result = self.event_string + self.state_separator + state
 
@@ -103,6 +127,11 @@ class EventStreamBase(object):
     #     #data = yaml.safe_load(open('defaults.yaml'))
     #     #data['url']
 
+    """this will resolve an event to it's respected kafka topic
+
+    Arguments:
+        key: the event to be resolved
+    """
     def resolve_event(self, event):
         topic_name = self.build_topic_name(event['state'], event['relation_type'])
         if topic_name in self.topics:
