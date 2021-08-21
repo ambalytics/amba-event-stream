@@ -22,7 +22,7 @@ jobs:
 
         - name: reset
           run: git checkout --orphan gh-pages
-               git reset --hard or git rm -rf .
+               git rm -rf .
                git commit --allow-empty -m "Initializing gh-pages branch"
 
         - name: deploy
