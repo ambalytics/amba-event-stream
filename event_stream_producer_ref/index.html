@@ -329,8 +329,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#event_stream.event_stream_producer.EventStreamProducer.log" class="md-nav__link">
-    log
+  <a href="#event_stream.event_stream_producer.EventStreamProducer.create_producer" class="md-nav__link">
+    create_producer()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_producer.EventStreamProducer.publish" class="md-nav__link">
+    publish()
   </a>
   
 </li>
@@ -393,8 +400,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#event_stream.event_stream_producer.EventStreamProducer.log" class="md-nav__link">
-    log
+  <a href="#event_stream.event_stream_producer.EventStreamProducer.create_producer" class="md-nav__link">
+    create_producer()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_producer.EventStreamProducer.publish" class="md-nav__link">
+    publish()
   </a>
   
 </li>
@@ -464,12 +478,45 @@
 
 
 
-  <div class="doc doc-object doc-attribute">
 
 
 
-<h3 id="event_stream.event_stream_producer.EventStreamProducer.log" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">log</span></code>
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_producer.EventStreamProducer.create_producer" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_producer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>create the producer</p>
+
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_producer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_producer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;create the producer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">producer</span> <span class="o">=</span> <span class="n">KafkaProducer</span><span class="p">(</span><span class="n">bootstrap_servers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_servers</span><span class="p">,</span> <span class="n">api_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_version</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_producer.EventStreamProducer.publish" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></code>
 
 
 </h3>
@@ -496,15 +543,30 @@
         <td><em>required</em></td>
       </tr>
   </tbody>
-</table>    </div>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_producer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">publish</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;publish an event</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        event: the event which should be shared</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">topic_event</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_topic_name_event</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">producer</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_producer</span><span class="p">()</span>
+
+    <span class="n">value</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get_json</span><span class="p">()</span>
+    <span class="c1"># logging.warning(self.log + &quot;v %s&quot; % value)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">producer</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">topic_event</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">value</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">producer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;Message published successfully to topic </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">topic_event</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
 
   </div>
-
-
-
-
-
-
 
 
 

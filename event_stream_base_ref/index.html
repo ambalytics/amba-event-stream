@@ -301,6 +301,47 @@
     EventStreamBase
   </a>
   
+    <nav class="md-nav" aria-label="EventStreamBase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.build_topic_list" class="md-nav__link">
+    build_topic_list()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.build_topic_name" class="md-nav__link">
+    build_topic_name()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.get_topic_name" class="md-nav__link">
+    get_topic_name()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.get_topic_name_event" class="md-nav__link">
+    get_topic_name_event()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.resolve_event" class="md-nav__link">
+    resolve_event()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -375,6 +416,47 @@
   <a href="#event_stream.event_stream_base.EventStreamBase" class="md-nav__link">
     EventStreamBase
   </a>
+  
+    <nav class="md-nav" aria-label="EventStreamBase">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.build_topic_list" class="md-nav__link">
+    build_topic_list()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.build_topic_name" class="md-nav__link">
+    build_topic_name()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.get_topic_name" class="md-nav__link">
+    get_topic_name()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.get_topic_name_event" class="md-nav__link">
+    get_topic_name_event()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_base.EventStreamBase.resolve_event" class="md-nav__link">
+    resolve_event()
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -455,8 +537,274 @@
 
 
 
+  <div class="doc doc-object doc-method">
 
 
+
+<h3 id="event_stream.event_stream_base.EventStreamBase.build_topic_list" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">build_topic_list</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>build a list of topics from the configs</p>
+
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_base.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">build_topic_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;build a list of topics from the configs</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">c_state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_states</span><span class="p">:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">build_topic_name</span><span class="p">(</span><span class="n">c_state</span><span class="p">))</span>
+        <span class="c1"># print(c_state)</span>
+        <span class="c1"># print(self.config_states[c_state])</span>
+        <span class="k">if</span> <span class="s1">&#39;own_topic&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_states</span><span class="p">[</span><span class="n">c_state</span><span class="p">]:</span>
+            <span class="k">for</span> <span class="n">c_o_topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_states</span><span class="p">[</span><span class="n">c_state</span><span class="p">][</span><span class="s1">&#39;own_topic&#39;</span><span class="p">]:</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">build_topic_name</span><span class="p">(</span><span class="n">c_state</span><span class="p">,</span> <span class="n">c_o_topic</span><span class="p">))</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="n">result</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> current topics for events: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_base.EventStreamBase.build_topic_name" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">build_topic_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">relation_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>build the name of the topic for a given state</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>state</code></td>
+        <td><code></code></td>
+        <td><p>the state to get the topic for</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>relation_type</code></td>
+        <td><code></code></td>
+        <td><p>optional, in case it has it's own topic</p></td>
+        <td><code>&#39;&#39;</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_base.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">build_topic_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">relation_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;build the name of the topic for a given state</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        state: the state to get the topic for</span>
+<span class="sd">        relation_type: optional, in case it has it&#39;s own topic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_string</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_separator</span> <span class="o">+</span> <span class="n">state</span>
+
+    <span class="k">if</span> <span class="n">relation_type</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">relation_type_separator</span> <span class="o">+</span> <span class="n">relation_type</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_base.EventStreamBase.get_topic_name" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_topic_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">relation_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>get the name of the topic for a given state</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>state</code></td>
+        <td><code></code></td>
+        <td><p>the state to get the topic for</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>relation_type</code></td>
+        <td><code></code></td>
+        <td><p>optional, in case it has it's own topic</p></td>
+        <td><code>&#39;&#39;</code></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_base.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_topic_name</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">relation_type</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;get the name of the topic for a given state</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        state: the state to get the topic for</span>
+<span class="sd">        relation_type: optional, in case it has it&#39;s own topic</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">event_string</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">state_separator</span> <span class="o">+</span> <span class="n">state</span>
+
+    <span class="c1"># if a relation type is set and has is own topic</span>
+    <span class="k">if</span> <span class="n">relation_type</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="s1">&#39;own_topic&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config_states</span><span class="p">[</span><span class="n">state</span><span class="p">]</span> <span class="ow">and</span> <span class="n">relation_type</span> <span class="ow">in</span> \
+            <span class="bp">self</span><span class="o">.</span><span class="n">config_states</span><span class="p">[</span><span class="n">state</span><span class="p">][</span><span class="s1">&#39;own_topic&#39;</span><span class="p">]:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">relation_type_separator</span> <span class="o">+</span> <span class="n">relation_type</span>
+    <span class="k">return</span> <span class="n">result</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_base.EventStreamBase.get_topic_name_event" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">get_topic_name_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>this will resolve an event to it's respected kafka topic</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>key</code></td>
+        <td><code></code></td>
+        <td><p>the event to be resolved</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_base.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">get_topic_name_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;this will resolve an event to it&#39;s respected kafka topic</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        key: the event to be resolved</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;state&#39;</span><span class="p">)</span>
+    <span class="n">relation_type</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;relation_type&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_topic_name</span><span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">relation_type</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_base.EventStreamBase.resolve_event" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">resolve_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>this will resolve an event to it's respected kafka topic</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>key</code></td>
+        <td><code></code></td>
+        <td><p>the event to be resolved</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_base.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">resolve_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;this will resolve an event to it&#39;s respected kafka topic</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        key: the event to be resolved</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">topic_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_topic_name</span><span class="p">(</span><span class="n">event</span><span class="p">[</span><span class="s1">&#39;state&#39;</span><span class="p">],</span> <span class="n">event</span><span class="p">[</span><span class="s1">&#39;relation_type&#39;</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">topic_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">topic_name</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;Unable to resolve event, topic_name </span><span class="si">%s</span><span class="s2"> not found&quot;</span> <span class="o">%</span> <span class="n">topic_name</span><span class="p">)</span>
+    <span class="k">return</span> <span class="kc">False</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 

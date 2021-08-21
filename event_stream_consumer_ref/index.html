@@ -317,8 +317,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.log" class="md-nav__link">
-    log
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.consume" class="md-nav__link">
+    consume()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.create_consumer" class="md-nav__link">
+    create_consumer()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.on_message" class="md-nav__link">
+    on_message()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.stop" class="md-nav__link">
+    stop()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.worker" class="md-nav__link">
+    worker()
   </a>
   
 </li>
@@ -393,8 +421,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.log" class="md-nav__link">
-    log
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.consume" class="md-nav__link">
+    consume()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.create_consumer" class="md-nav__link">
+    create_consumer()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.on_message" class="md-nav__link">
+    on_message()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.stop" class="md-nav__link">
+    stop()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.worker" class="md-nav__link">
+    worker()
   </a>
   
 </li>
@@ -452,7 +508,7 @@
 
     <div class="doc doc-contents ">
 
-      <p>a base consumer class for consuming from kafka
+      <p>a base consumer class for consuming from kafka,
 uses multiprocessing to share workload</p>
 
 
@@ -466,12 +522,79 @@ uses multiprocessing to share workload</p>
 
 
 
-  <div class="doc doc-object doc-attribute">
 
 
 
-<h3 id="event_stream.event_stream_consumer.EventStreamConsumer.log" class="doc doc-heading">
-<code class="highlight language-python"><span class="n">log</span></code>
+
+
+
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_consumer.EventStreamConsumer.consume" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>consume messages and add them to a queue to share with the worker processes</p>
+
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_consumer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">consume</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;consume messages and add them to a queue to share with the worker processes</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;start consume&quot;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">create_consumer</span><span class="p">()</span>
+
+    <span class="c1"># Start worker processes</span>
+    <span class="c1"># for i in range(self.process_number):</span>
+    <span class="c1">#     Process(target=self.on_message, args=(self.task_queue, )).start()</span>
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_queue</span><span class="p">,))</span>
+
+    <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="p">:</span>
+                <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;msg in consumer &#39;</span><span class="p">)</span>
+                <span class="c1"># logging.warning(&#39;msg in consumer %s&#39; % msg.value)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">task_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)))</span>
+
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;stream Consumer generated an exception: </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">exc</span><span class="p">)</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;Consumer closed&quot;</span><span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="c1"># keep alive</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">consume</span><span class="p">()</span>
+
+    <span class="n">pool</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;Consumer shutdown&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_consumer.EventStreamConsumer.create_consumer" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">create_consumer</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
 
 
 </h3>
@@ -479,22 +602,179 @@ uses multiprocessing to share workload</p>
     <div class="doc doc-contents ">
 
       <p>create the consumer, connect to kafka</p>
+
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_consumer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_consumer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;create the consumer, connect to kafka</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;rt: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_topic_list</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">,</span> <span class="n">six</span><span class="o">.</span><span class="n">string_types</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">state</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">relation_type</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_topic_name</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">relation_type</span><span class="o">=</span><span class="n">relation_type</span><span class="p">))</span>
+
+    <span class="c1"># self.topic_name = &#39;tweets&#39;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;get consumer for topic: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">)</span>
+    <span class="c1"># consumer.topics()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span> <span class="o">=</span> <span class="n">KafkaConsumer</span><span class="p">(</span><span class="n">group_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">,</span>
+                                  <span class="n">bootstrap_servers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_servers</span><span class="p">,</span> <span class="n">api_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_version</span><span class="p">,</span>
+                                  <span class="n">consumer_timeout_ms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">consumer_timeout_ms</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;consumer subscribe: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">topic</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;consumer subscribed to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">topics</span><span class="p">())</span>
+</code></pre></div>
+        </details>
     </div>
 
   </div>
 
 
 
+  <div class="doc doc-object doc-method">
 
 
 
+<h3 id="event_stream.event_stream_consumer.EventStreamConsumer.on_message" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">on_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_msg</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>the on message function to be implemented in own classes</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>json_msg</code></td>
+        <td><code></code></td>
+        <td><p>the message to do stuff with</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_consumer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">on_message</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">json_msg</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;the on message function to be implemented in own classes</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        json_msg: the message to do stuff with</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;on message&quot;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
+  <div class="doc doc-object doc-method">
 
 
 
+<h3 id="event_stream.event_stream_consumer.EventStreamConsumer.stop" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span></code>
 
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>stop the consumer</p>
+
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_consumer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">stop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;stop the consumer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;stop running consumer&#39;</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
+
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_consumer.EventStreamConsumer.worker" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">worker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">)</span></code>
+
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>worker function to get items from the queue</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>queue</code></td>
+        <td><code></code></td>
+        <td><p>the queue</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_consumer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">worker</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">queue</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;worker function to get items from the queue</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        queue: the queue</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;working </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+        <span class="n">item</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;got </span><span class="si">%s</span><span class="s2"> item&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">on_message</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
