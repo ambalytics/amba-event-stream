@@ -22,10 +22,8 @@ jobs:
 
         - name: reset
           run: git checkout --orphan gh-pages
-            # Clean all (untracked) files:
-            git reset --hard or git rm -rf .
-            # Create first commit:
-            git commit --allow-empty -m "Initializing gh-pages branch"
+               git reset --hard or git rm -rf .
+               git commit --allow-empty -m "Initializing gh-pages branch"
 
         - name: deploy
           run: mkdocs gh-deploy
