@@ -31,7 +31,7 @@ from multiprocessing import Process, Queue, current_process, freeze_support, Poo
 
 class EventStreamConsumer(EventStreamBase):
     """
-    a base consumer class for consuming from kafka
+    a base consumer class for consuming from kafka,
     uses multiprocessing to share workload
     """
     relation_type = ''
@@ -43,10 +43,9 @@ class EventStreamConsumer(EventStreamBase):
     process_number = 4
     log = "EventStreamConsumer " + str(id) + " "
 
-    """create the consumer, connect to kafka
-
-    """
     def create_consumer(self):
+        """create the consumer, connect to kafka
+        """
         logging.warning(self.log + "rt: %s" % self.relation_type)
 
         if self.state == 'all':
@@ -68,8 +67,8 @@ class EventStreamConsumer(EventStreamBase):
         logging.warning(self.log + "get consumer for topic: %s" % self.topics)
         # consumer.topics()
         self.consumer = KafkaConsumer(group_id=self.group_id,
-                             bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
-                             consumer_timeout_ms=self.consumer_timeout_ms)
+                                      bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
+                                      consumer_timeout_ms=self.consumer_timeout_ms)
 
         for topic in self.topics:
             logging.warning(self.log + "consumer subscribe: %s" % topic)
@@ -77,10 +76,10 @@ class EventStreamConsumer(EventStreamBase):
 
         logging.warning(self.log + "consumer subscribed to: %s" % self.consumer.topics())
 
-    """consume messages and add them to a queue to share with the worker processes
-
-    """
     def consume(self):
+        """consume messages and add them to a queue to share with the worker processes
+
+        """
         logging.warning(self.log + "start consume")
         self.running = True
 
@@ -112,29 +111,29 @@ class EventStreamConsumer(EventStreamBase):
         pool.close()
         logging.warning(self.log + "Consumer shutdown")
 
-    """worker function to get items from the queue
-
-    Arguments:
-        queue: the queue
-    """
     def worker(self, queue):
+        """worker function to get items from the queue
+
+        Arguments:
+            queue: the queue
+        """
         logging.debug(self.log + "working %s" % os.getpid())
         while True:
             item = queue.get(True)
             logging.debug(self.log + "got %s item" % os.getpid())
             self.on_message(item)
 
-    """the on message function to be implemented in own classes 
-
-    Arguments:
-        json_msg: the message to do stuff with
-    """
     def on_message(self, json_msg):
+        """the on message function to be implemented in own classes
+
+        Arguments:
+            json_msg: the message to do stuff with
+        """
         logging.warning(self.log + "on message")
 
-    """stop the consumer
-    """
     def stop(self):
+        """stop the consumer
+        """
         self.running = False
         logging.warning(self.log + 'stop running consumer')
 
