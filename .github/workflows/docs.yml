@@ -26,8 +26,5 @@ jobs:
         - name: reset 2
           run: git rm -rf .
 
-        - name: reset 3
-          run: git commit --allow-empty -m "Initializing gh-pages branch"
-
         - name: deploy
           run: mkdocs gh-deploy
