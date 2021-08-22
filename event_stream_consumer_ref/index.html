@@ -566,8 +566,9 @@ uses multiprocessing to share workload</p>
         <span class="k">try</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">msg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="p">:</span>
                 <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;msg in consumer &#39;</span><span class="p">)</span>
-                <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">:</span>
+                    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">value</span> <span class="o">+=</span> <span class="mi">1</span>
                 <span class="c1"># logging.warning(&#39;msg in consumer %s&#39; % msg.value)</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">task_queue</span><span class="o">.</span><span class="n">put</span><span class="p">(</span><span class="n">json</span><span class="o">.</span><span class="n">loads</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">value</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)))</span>
 
