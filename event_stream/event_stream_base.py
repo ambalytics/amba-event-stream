@@ -62,8 +62,9 @@ class EventStreamBase(object):
 
     log = "EventStreamBase " + str(id) + " "
 
-    def __init__(self, id_in):
+    def __init__(self, id_in, counter_in):
         self.id = id_in
+        self.counter = counter_in
         self.log = self.log + str(self.id) + ": "
 
     def build_topic_list(self):
