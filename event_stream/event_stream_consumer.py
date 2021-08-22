@@ -95,8 +95,9 @@ class EventStreamConsumer(EventStreamBase):
             try:
                 for msg in self.consumer:
                     logging.debug(self.log + 'msg in consumer ')
-                    with self.counter.get_lock():
-                        self.counter.value += 1
+                    if self.counter:
+                        with self.counter.get_lock():
+                            self.counter.value += 1
                     # logging.warning('msg in consumer %s' % msg.value)
                     self.task_queue.put(json.loads(msg.value.decode('utf-8')))
 
