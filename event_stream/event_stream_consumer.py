@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import time
+from _queue import Empty
 
 from .event_stream_base import EventStreamBase
 
@@ -121,10 +123,16 @@ class EventStreamConsumer(EventStreamBase):
             queue: the queue
         """
         logging.debug(self.log + "working %s" % os.getpid())
-        while True:
-            item = queue.get(True)
-            logging.debug(self.log + "got %s item" % os.getpid())
-            self.on_message(item)
+        while self.running:
+            try:
+                item = queue.get()
+            except Empty:
+                time.sleep(0.1)
+                pass
+            else:
+                logging.debug(self.log + "got %s item" % os.getpid())
+                self.on_message(item)
+                queue.task_done()
 
     def on_message(self, json_msg):
         """the on message function to be implemented in own classes
