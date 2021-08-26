@@ -356,6 +356,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.throughput_statistics" class="md-nav__link">
+    throughput_statistics()
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -460,6 +467,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.throughput_statistics" class="md-nav__link">
+    throughput_statistics()
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -556,6 +570,11 @@ uses multiprocessing to share workload</p>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_consumer</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">counter_time</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">counter_time</span><span class="p">,</span> <span class="n">throughput_statistics</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">,</span> <span class="n">counter_time</span><span class="p">])</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
     <span class="c1"># Start worker processes</span>
     <span class="c1"># for i in range(self.process_number):</span>
@@ -770,6 +789,7 @@ uses multiprocessing to share workload</p>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;working </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
     <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">running</span><span class="p">:</span>
+        <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.001</span><span class="p">)</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">item</span> <span class="o">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">get</span><span class="p">()</span>
         <span class="k">except</span> <span class="n">queue</span><span class="o">.</span><span class="n">Empty</span><span class="p">:</span>
@@ -794,6 +814,67 @@ uses multiprocessing to share workload</p>
 
   </div>
 
+
+
+
+  <div class="doc doc-object doc-function">
+
+
+
+<h2 id="event_stream.event_stream_consumer.throughput_statistics" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">throughput_statistics</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">time_delta</span><span class="p">)</span></code>
+
+
+</h2>
+
+    <div class="doc doc-contents ">
+
+      <p>show and setup in own thread repeatedly how many events are processed</p>
+
+<p><strong>Parameters:</strong></p>
+<table>
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Type</th>
+      <th>Description</th>
+      <th>Default</th>
+    </tr>
+  </thead>
+  <tbody>
+      <tr>
+        <td><code>v</code></td>
+        <td><code></code></td>
+        <td><p>the value</p></td>
+        <td><em>required</em></td>
+      </tr>
+      <tr>
+        <td><code>time_delta</code></td>
+        <td><code></code></td>
+        <td><p>time delta we wan't to monitor</p></td>
+        <td><em>required</em></td>
+      </tr>
+  </tbody>
+</table>
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_consumer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">throughput_statistics</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">time_delta</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;show and setup in own thread repeatedly how many events are processed</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        v: the value</span>
+<span class="sd">        time_delta: time delta we wan&#39;t to monitor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;THROUGHPUT: </span><span class="si">%d</span><span class="s2"> / </span><span class="si">%d</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">v</span><span class="o">.</span><span class="n">value</span><span class="p">,</span> <span class="n">time_delta</span><span class="p">))</span>
+    <span class="k">with</span> <span class="n">v</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
+        <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
+
+    <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">time_delta</span><span class="p">,</span> <span class="n">throughput_statistics</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">time_delta</span><span class="p">])</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
