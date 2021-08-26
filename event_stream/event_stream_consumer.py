@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import threading
 import time
 
 from .event_stream_base import EventStreamBase
@@ -8,7 +9,7 @@ from .event_stream_base import EventStreamBase
 from kafka import KafkaConsumer, KafkaProducer
 from kafka.vendor import six
 
-from multiprocessing import Process, Queue, current_process, freeze_support, Pool
+from multiprocessing import Process, Queue, current_process, freeze_support, Pool, Value
 
 
 # idee
@@ -29,6 +30,21 @@ from multiprocessing import Process, Queue, current_process, freeze_support, Poo
 #
 # -> event stream problem (handle multiple or just one each?)
 # eventstreap processor process producer1, consumer2,
+
+# todo util
+def throughput_statistics(v, time_delta):
+    """show and setup in own thread repeatedly how many events are processed
+
+    Arguments:
+        v: the value
+        time_delta: time delta we wan't to monitor
+    """
+    logging.warning("THROUGHPUT: %d / %d" % (v.value, time_delta))
+    with v.get_lock():
+        v.value = 0
+
+    threading.Timer(time_delta, throughput_statistics, args=[v, time_delta]).start()
+
 
 class EventStreamConsumer(EventStreamBase):
     """
@@ -87,6 +103,11 @@ class EventStreamConsumer(EventStreamBase):
         if not self.consumer:
             self.create_consumer()
 
+        if not self.counter:
+            self.counter = Value('i', 0)
+            counter_time = 10
+            threading.Timer(counter_time, throughput_statistics, args=[self.counter, counter_time]).start()
+
         # Start worker processes
         # for i in range(self.process_number):
         #     Process(target=self.on_message, args=(self.task_queue, )).start()
@@ -123,6 +144,7 @@ class EventStreamConsumer(EventStreamBase):
         """
         logging.debug(self.log + "working %s" % os.getpid())
         while self.running:
+            time.sleep(0.001)
             try:
                 item = queue.get()
             except queue.Empty:
