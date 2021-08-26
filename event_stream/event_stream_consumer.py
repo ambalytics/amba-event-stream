@@ -131,7 +131,6 @@ class EventStreamConsumer(EventStreamBase):
             else:
                 logging.debug(self.log + "got %s item" % os.getpid())
                 self.on_message(item)
-                queue.task_done()
 
     def on_message(self, json_msg):
         """the on message function to be implemented in own classes
