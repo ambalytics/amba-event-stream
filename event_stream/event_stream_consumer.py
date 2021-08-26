@@ -2,7 +2,6 @@ import json
 import logging
 import os
 import time
-from _queue import Empty
 
 from .event_stream_base import EventStreamBase
 
@@ -126,7 +125,7 @@ class EventStreamConsumer(EventStreamBase):
         while self.running:
             try:
                 item = queue.get()
-            except Empty:
+            except queue.Empty:
                 time.sleep(0.1)
                 pass
             else:
