@@ -778,7 +778,6 @@ uses multiprocessing to share workload</p>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;got </span><span class="si">%s</span><span class="s2"> item&quot;</span> <span class="o">%</span> <span class="n">os</span><span class="o">.</span><span class="n">getpid</span><span class="p">())</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">on_message</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
-            <span class="n">queue</span><span class="o">.</span><span class="n">task_done</span><span class="p">()</span>
 </code></pre></div>
         </details>
     </div>
