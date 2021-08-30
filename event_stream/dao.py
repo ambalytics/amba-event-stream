@@ -10,9 +10,10 @@ class DAO(object):
     def __init__(self):
         host_server = os.environ.get('POSTGRES_HOST', 'localhost')
         db_server_port = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_PORT', '5432')))
-        database_name = os.environ.get('POSTGRES_DB', 'fastapi')
-        db_username = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_USER', 'postgres')))
-        db_password = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_PASSWORD', 'secret')))
+        database_name = os.environ.get('POSTGRES_DB', 'amba')
+        db_username = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_USER', 'streams')))
+        db_password = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_PASSWORD', 'REPLACE_ME')))
+
         # ssl_mode = urllib.parse.quote_plus(str(os.environ.get('ssl_mode','prefer')))
         DATABASE_URL = 'postgresql://{}:{}@{}:{}/{}'.format(db_username, db_password, host_server,
                                                             db_server_port, database_name)
