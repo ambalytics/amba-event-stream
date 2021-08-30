@@ -32,7 +32,7 @@ class DAO(object):
         return obj
 
     def get_object(self, table, key):
-        return self.session.query(table).get(key)
+        return self.session.query(table).filter_by(key).first()
 
     def save_if_not_exist(self, obj, table, key):
         obj_db = self.get_object(table, key)
