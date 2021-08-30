@@ -5,7 +5,7 @@ from enum import Enum
 Base = declarative_base()
 
 
-class publicationType(str, Enum):
+class PublicationType(str, Enum):
     BOOK = 'BOOK'
     BOOK_CHAPTER = 'BOOK_CHAPTER'
     BOOK_REFERENCE_ENTRY = 'BOOK_REFERENCE_ENTRY'
@@ -23,7 +23,7 @@ class Publication(Base):
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     doi = sa.Column(sa.String(), nullable=False, unique=True)
-    type = sa.Column(sa.Enum(publicationType))
+    type = sa.Column(sa.Enum(PublicationType))
     pubDate = sa.Column(sa.String())
     year = sa.Column(sa.Integer())
     publisher = sa.Column(sa.String())
@@ -62,36 +62,36 @@ class Author(Base):
 class PublicationCitation(Base):
     __tablename__ = 'PublicationCitation'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
-    citationId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    citationId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
 
 
 class PublicationReference(Base):
     __tablename__ = 'PublicationReference'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
-    referenceId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    referenceId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
 
 
 class PublicationFieldOfStudy(Base):
     __tablename__ = 'PublicationFieldOfStudy'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
-    fieldOfStudyId = sa.Column(sa.Integer(), sa.ForeignKey('FieldOfStudy.id'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    fieldOfStudyId = sa.Column(sa.Integer(), sa.ForeignKey('FieldOfStudy.id'), primary_key=True)
 
 
 class PublicationAuthor(Base):
     __tablename__ = 'PublicationAuthor'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
-    authorId = sa.Column(sa.Integer(), sa.ForeignKey('Author.id'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    authorId = sa.Column(sa.Integer(), sa.ForeignKey('Author.id'), primary_key=True)
 
 
 class PublicationSource(Base):
     __tablename__ = 'PublicationSource'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
-    sourceId = sa.Column(sa.Integer(), sa.ForeignKey('Source.id'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    sourceId = sa.Column(sa.Integer(), sa.ForeignKey('Source.id'), primary_key=True)
 
 
 class DiscussionData(Base):
@@ -147,26 +147,27 @@ class DiscussionAuthor(Base):
 class DiscussionEntityData(Base):
     __tablename__ = 'DiscussionEntityData'
 
-    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'))
-    discussionEntityId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionEntity.id'))
+    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'), primary_key=True)
+    discussionEntityId = sa.Column(sa.Integer(),  sa.ForeignKey('DiscussionEntity.id'), primary_key=True)
 
 
 class DiscussionAuthorData(Base):
     __tablename__ = 'DiscussionAuthorData'
 
-    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'))
-    discussionAuthorId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionAuthor.id'))
+    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'), primary_key=True)
+    discussionAuthorId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionAuthor.id'), primary_key=True)
 
 
 class DiscussionWordData(Base):
     __tablename__ = 'DiscussionWordData'
 
-    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'))
-    discussionWordId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionWord.id'))
+    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'), primary_key=True)
+    discussionWordId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionWord.id'), primary_key=True)
+    count = sa.Column(sa.Integer())
 
 
 class DiscussionHashtagData(Base):
     __tablename__ = 'DiscussionHashtagData'
 
-    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'))
-    iscussionHashtagId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionHashtag.id'))
+    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'), primary_key=True)
+    iscussionHashtagId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionHashtag.id'), primary_key=True)
