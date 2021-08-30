@@ -35,7 +35,7 @@ class DAO(object):
         return self.session.query(table).filter(key).first()
 
     def save_if_not_exist(self, obj, table, **kwargs):
-        obj_db = self.get_object(table, kwargs)
+        obj_db = self.get_object(table, **kwargs)
         if not obj_db:
             return self.save_object(obj)
         else:
