@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 class DAO(object):
 
     def __init__(self):
-        host_server = os.environ.get('POSTGRES_HOST', 'localhost')
+        host_server = os.environ.get('POSTGRES_HOST', 'postgres')
         db_server_port = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_PORT', '5432')))
         database_name = os.environ.get('POSTGRES_DB', 'amba')
         db_username = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_USER', 'streams')))
@@ -18,7 +18,7 @@ class DAO(object):
         DATABASE_URL = 'postgresql://{}:{}@{}:{}/{}'.format(db_username, db_password, host_server,
                                                             db_server_port, database_name)
         print(DATABASE_URL)
-        engine = create_engine('postgresql://streams:REPLACE_ME@localhost:5432/amba')
+        engine = create_engine('postgresql+psycopg2://streams:REPLACE_ME@postgres:5432/amba')
         Base.metadata.create_all(engine)
         # database = databases.Database(DATABASE_URL)
 
