@@ -42,7 +42,7 @@ class DAO(object):
             return obj_db
 
     def save_publication(self, publication_data):
-        publication = Publication.objects(doi=publication_data['doi'], type=publication_data['type'],
+        publication = Publication(doi=publication_data['doi'], type=publication_data['type'],
                                           pubDate=publication_data['pubDate'], year=publication_data['year'],
                                           publisher=publication_data['publisher'],
                                           citationCount=publication_data['citationCount'],
