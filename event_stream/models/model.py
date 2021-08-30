@@ -5,7 +5,7 @@ from enum import Enum
 Base = declarative_base()
 
 
-class PublicationType(str, Enum):
+class publicationType(str, Enum):
     BOOK = 'BOOK'
     BOOK_CHAPTER = 'BOOK_CHAPTER'
     BOOK_REFERENCE_ENTRY = 'BOOK_REFERENCE_ENTRY'
@@ -18,26 +18,23 @@ class PublicationType(str, Enum):
     UNKNOWN = 'UNKNOWN'
 
 
-class Publications(Base):
-    __tablename__ = 'publications'
+class Publication(Base):
+    __tablename__ = 'Publication'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     doi = sa.Column(sa.String(), nullable=False, unique=True)
-    type = sa.Column(sa.Enum(PublicationType))
+    type = sa.Column(sa.Enum(publicationType))
     pubDate = sa.Column(sa.String())
     year = sa.Column(sa.Integer())
     publisher = sa.Column(sa.String())
-    citation_count = sa.Column(sa.Integer())
+    citationCount = sa.Column(sa.Integer())
     title = sa.Column(sa.String())
-    normalized_title = sa.Column(sa.String())
+    normalizedTitle = sa.Column(sa.String())
     abstract = sa.Column(sa.Text())
 
-    def __repr__(self):
-        return "<Publication %r>" % self.doi
 
-
-class Sources(Base):
-    __tablename__ = 'sources'
+class Source(Base):
+    __tablename__ = 'Source'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     title = sa.Column(sa.String())
@@ -46,65 +43,63 @@ class Sources(Base):
 
 
 class FieldOfStudy(Base):
-    __tablename__ = 'field_of_study'
+    __tablename__ = 'FieldOfStudy'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     name = sa.Column(sa.String())
-    normalized_name = sa.Column(sa.String())
+    normalizedName = sa.Column(sa.String())
     level = sa.Column(sa.Integer())
 
 
-class Authors(Base):
-    __tablename__ = 'authors'
+class Author(Base):
+    __tablename__ = 'Author'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     name = sa.Column(sa.String())
-    normalized_name = sa.Column(sa.String())
+    normalizedName = sa.Column(sa.String())
 
 
-class PublicationCitations(Base):
-    __tablename__ = 'publication_citations'
+class PublicationCitation(Base):
+    __tablename__ = 'PublicationCitation'
 
-    publication_doi = sa.Column(sa.Integer(), sa.ForeignKey('publications.doi'))
-    citation_id = sa.Column(sa.Integer(), sa.ForeignKey('publications.doi'))
-
-
-class PublicationReferences(Base):
-    __tablename__ = 'publication_references'
-
-    publication_doi = sa.Column(sa.Integer(), sa.ForeignKey('publications.doi'))
-    reference_id = sa.Column(sa.Integer(), sa.ForeignKey('publications.doi'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
+    citationId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
 
 
-class PublicationFieldsOfStudy(Base):
-    __tablename__ = 'publication_fields_of_study'
+class PublicationReference(Base):
+    __tablename__ = 'PublicationReference'
 
-    publication_doi = sa.Column(sa.Integer(), sa.ForeignKey('publications.doi'))
-    field_of_study_id = sa.Column(sa.Integer(), sa.ForeignKey('field_of_study.id'))
-
-
-class PublicationAuthors(Base):
-    __tablename__ = 'publication_authors'
-
-    publication_doi = sa.Column(sa.Integer(), sa.ForeignKey('publications.doi'))
-    author_id = sa.Column(sa.Integer(), sa.ForeignKey('authors.id'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
+    referenceId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
 
 
-class PublicationSources(Base):
-    __tablename__ = 'publication_sources'
+class PublicationFieldOfStudy(Base):
+    __tablename__ = 'PublicationFieldOfStudy'
 
-    publication_doi = sa.Column(sa.Integer(), sa.ForeignKey('publications.doi'))
-    source_id = sa.Column(sa.Integer(), sa.ForeignKey('sources.id'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
+    fieldOfStudyId = sa.Column(sa.Integer(), sa.ForeignKey('FieldOfStudy.id'))
 
 
-# --------------------------------------------------------------------------------------------------------------------
+class PublicationAuthor(Base):
+    __tablename__ = 'PublicationAuthor'
+
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
+    authorId = sa.Column(sa.Integer(), sa.ForeignKey('Author.id'))
+
+
+class PublicationSource(Base):
+    __tablename__ = 'PublicationSource'
+
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
+    sourceId = sa.Column(sa.Integer(), sa.ForeignKey('Source.id'))
+
 
 class DiscussionData(Base):
-    __tablename__ = 'discussion_data'
+    __tablename__ = 'DiscussionData'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
-    publication_id = sa.Column(sa.Integer(), sa.ForeignKey('publications.id'))
-    created_at = sa.Column(sa.TIMESTAMP())
+    publicationId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.id'))
+    createdAt = sa.Column(sa.TIMESTAMP())
     score = sa.Column(sa.Integer())
     abstractDifference = sa.Column(sa.Float())
     length = sa.Column(sa.Integer())
@@ -112,66 +107,66 @@ class DiscussionData(Base):
     exclamations = sa.Column(sa.Integer())
     type = sa.Column(sa.String())
     sentiment = sa.Column(sa.Float())
-    subj_id = sa.Column(sa.Integer())
+    subjId = sa.Column(sa.Integer())
     followers = sa.Column(sa.Integer())
     verified = sa.Column(sa.Boolean())
-    bot_score = sa.Column(sa.Float())
-    author_name = sa.Column(sa.String())
-    author_location = sa.Column(sa.String())
-    source_id = sa.Column(sa.String())
+    botScore = sa.Column(sa.Float())
+    authorName = sa.Column(sa.String())
+    authorLocation = sa.Column(sa.String())
+    sourceId = sa.Column(sa.String())
 
 
-class DiscussionEntities(Base):
-    __tablename__ = 'discussion_entities'
+class DiscussionEntity(Base):
+    __tablename__ = 'DiscussionEntity'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     entity = sa.Column(sa.String())
 
 
-class DiscussionHashtags(Base):
-    __tablename__ = 'discussion_hashtags'
+class DiscussionHashtag(Base):
+    __tablename__ = 'DiscussionHashtag'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     hashtag = sa.Column(sa.String())
 
 
-class DiscussionWords(Base):
-    __tablename__ = 'discussion_words'
+class DiscussionWord(Base):
+    __tablename__ = 'DiscussionWord'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     word = sa.Column(sa.String())
 
 
-class DiscussionAuthors(Base):
-    __tablename__ = 'discussion_authors'
+class DiscussionAuthor(Base):
+    __tablename__ = 'DiscussionAuthor'
 
     id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     name = sa.Column(sa.String())
 
 
-class DiscussionAuthorsData(Base):
-    __tablename__ = 'discussion_authors_data'
+class DiscussionEntityData(Base):
+    __tablename__ = 'DiscussionEntityData'
 
-    discussion_data_id = sa.Column(sa.Integer(), sa.ForeignKey('discussion_data.id'))
-    discussion_author_id = sa.Column(sa.Integer(), sa.ForeignKey('discussion_authors.id'))
-
-
-class DiscussionWordsData(Base):
-    __tablename__ = 'discussion_words_data'
-
-    discussion_data_id = sa.Column(sa.Integer(), sa.ForeignKey('discussion_data.id'))
-    discussion_word_id = sa.Column(sa.Integer(), sa.ForeignKey('discussion_words.id'))
+    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'))
+    discussionEntityId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionEntity.id'))
 
 
-class DiscussionHashtagsData(Base):
-    __tablename__ = 'discussion_hashtags_data'
+class DiscussionAuthorData(Base):
+    __tablename__ = 'DiscussionAuthorData'
 
-    discussion_data_id = sa.Column(sa.Integer(), sa.ForeignKey('discussion_data.id'))
-    discussion_hashtag_id = sa.Column(sa.Integer(), sa.ForeignKey('discussion_hashtags.id'))
+    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'))
+    discussionAuthorId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionAuthor.id'))
 
 
-class DiscussionEntitiesData(Base):
-    __tablename__ = 'discussion_entities_data'
+class DiscussionWordData(Base):
+    __tablename__ = 'DiscussionWordData'
 
-    discussion_data_id = sa.Column(sa.Integer(), sa.ForeignKey('discussion_data.id'))
-    discussion_entities_id = sa.Column(sa.Integer(), sa.ForeignKey('discussion_entities.id'))
+    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'))
+    discussionWordId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionWord.id'))
+
+
+class DiscussionHashtagData(Base):
+    __tablename__ = 'DiscussionHashtagData'
+
+    discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'))
+    iscussionHashtagId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionHashtag.id'))

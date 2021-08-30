@@ -18,7 +18,7 @@ import event_stream.models
 from sqlalchemy.orm import sessionmaker
 
 
-class DB(object):
+class DAO(object):
 
     def __init__(self):
         host_server = os.environ.get('POSTGRES_HOST', 'localhost')
@@ -54,29 +54,30 @@ class DB(object):
             return obj_db
 
     def save_publication(self, publication_data):
-        publication = Publications(**publication_data)
+        publication = Publication(**publication_data)
         publication = self.save_object(publication)
 
         authors = publication_data['authors']
         for author_data in authors:
-            author = Authors(**author_data)
-            author = self.save_if_not_exist(author, Authors, {'normalized_name': author.normalized_name})
+            author = Author(**author_data)
+            author = self.save_if_not_exist(author, Author, {'normalizedName': author.normalized_name})
 
-            publication_authors = PublicationAuthors({'author_id': author.id, 'publication_id': publication.id})
+            publication_authors = PublicationAuthor({'authorId': author.id, 'publicationId': publication.id})
             self.save_object(publication_authors)
 
-        sources = publication_data['sources']
+        sources = publication_data['source_id']
         for sources_data in sources:
-            source = Sources(**sources_data)
-            source = self.save_if_not_exist(source, Sources, {'title': source.title})
-            publication_sources = PublicationSources({'source_id': source.id, 'publication_id': publication.id})
+            source = Source(**sources_data)
+            source = self.save_if_not_exist(source, Source, {'title': source.title})
+            publication_sources = PublicationSource({'sourceId': source.id, 'publicationId': publication.id})
             self.save_object(publication_sources)
 
         fields_of_study = publication_data['fieldOfStudy']
         for fos_data in fields_of_study:
             fos = FieldOfStudy(**fos_data)
-            fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalized_name': fos.normalized_name})
-            publication_fos = PublicationFieldsOfStudy({'field_of_study_id': fos.id, 'publication_id': publication.id})
+            fos.level = 2
+            fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalized_name})
+            publication_fos = PublicationFieldOfStudy({'fieldOfStudyId': fos.id, 'publicationId': publication.id})
             self.save_object(publication_fos)
 
         return publication
