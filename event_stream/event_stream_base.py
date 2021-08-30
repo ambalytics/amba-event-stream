@@ -1,4 +1,5 @@
 import logging
+import os
 import time
 
 
@@ -66,6 +67,7 @@ class EventStreamBase(object):
         self.id = id_in
         self.counter = counter_in
         self.log = self.log + str(self.id) + ": "
+        self.bootstrap_servers = [os.environ['KAFKA_BOOTRSTRAP_SERVER']]
 
     def build_topic_list(self):
         """build a list of topics from the configs
