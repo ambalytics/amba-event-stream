@@ -62,35 +62,35 @@ class Author(Base):
 class PublicationCitation(Base):
     __tablename__ = 'PublicationCitation'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
-    citationId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    citationId = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), primary_key=True)
 
 
 class PublicationReference(Base):
     __tablename__ = 'PublicationReference'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
-    referenceId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    referenceId = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), primary_key=True)
 
 
 class PublicationFieldOfStudy(Base):
     __tablename__ = 'PublicationFieldOfStudy'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), primary_key=True)
     fieldOfStudyId = sa.Column(sa.Integer(), sa.ForeignKey('FieldOfStudy.id'), primary_key=True)
 
 
 class PublicationAuthor(Base):
     __tablename__ = 'PublicationAuthor'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), primary_key=True)
     authorId = sa.Column(sa.Integer(), sa.ForeignKey('Author.id'), primary_key=True)
 
 
 class PublicationSource(Base):
     __tablename__ = 'PublicationSource'
 
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'), primary_key=True)
+    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), primary_key=True)
     sourceId = sa.Column(sa.Integer(), sa.ForeignKey('Source.id'), primary_key=True)
 
 
