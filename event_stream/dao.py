@@ -17,8 +17,8 @@ class DAO(object):
         # ssl_mode = urllib.parse.quote_plus(str(os.environ.get('ssl_mode','prefer')))
         DATABASE_URL = 'postgresql://{}:{}@{}:{}/{}'.format(db_username, db_password, host_server,
                                                             db_server_port, database_name)
-
-        engine = create_engine(DATABASE_URL)
+        print(DATABASE_URL)
+        engine = create_engine('postgresql://streams:REPLACE_ME@localhost:5432/amba')
         Base.metadata.create_all(engine)
         # database = databases.Database(DATABASE_URL)
 
