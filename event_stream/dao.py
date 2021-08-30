@@ -1,20 +1,7 @@
-from typing import List
-from enum import Enum
-import datetime
-from typing import Optional
-
 from event_stream.models.model import *
-from pydantic import BaseModel
-import databases
-import sqlalchemy
-from fastapi import FastAPI, status
-from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 from sqlalchemy import Table, Column, MetaData, create_engine
-from enum import Enum
 import os
 import urllib
-import event_stream.models
 from sqlalchemy.orm import sessionmaker
 
 
