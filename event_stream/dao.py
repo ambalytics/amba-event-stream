@@ -49,12 +49,12 @@ class DAO(object):
                                           title=publication_data['title'],
                                           normalizedTitle=publication_data['normalizedTitle'],
                                           abstract=publication_data['abstract'])
-        publication = self.save_object(publication)
+        publication = self.save_if_not_exist(publication, Publication, {'doi': publication.doi})
 
         authors = publication_data['authors']
         for author_data in authors:
             author = Author(name=author_data['name'],  normalizedName=author_data['normalizedName'])
-            author = self.save_if_not_exist(author, Author, {'normalizedName': author.normalized_name})
+            author = self.save_if_not_exist(author, Author, {'normalizedName': author.normalizedName})
 
             publication_authors = PublicationAuthor({'authorId': author.id, 'publicationId': publication.id})
             self.save_object(publication_authors)
@@ -70,7 +70,7 @@ class DAO(object):
         for fos_data in fields_of_study:
             fos = FieldOfStudy(name=fos_data['name'],  normalizedName=fos_data['normalizedName'])
             fos.level = 2
-            fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalized_name})
+            fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
             publication_fos = PublicationFieldOfStudy({'fieldOfStudyId': fos.id, 'publicationId': publication.id})
             self.save_object(publication_fos)
 
