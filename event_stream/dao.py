@@ -41,7 +41,8 @@ class DAO(object):
         try:
             result = self.session.query(table).filter_by(**key).first()
         except psycopg2.errors.UniqueViolation as ex:
-            print(ex)
+            # print(ex)
+            self.session.rollback()
         else:
             return result
         finally:
