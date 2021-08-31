@@ -85,15 +85,16 @@ class DAO(object):
                 publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
                 self.save_object(publication_sources)
 
-        fields_of_study = publication_data['fieldOfStudy']
-        for fos_data in fields_of_study:
-            fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'])
-            fos.level = 2
-            fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
-            print(fos)
-            if fos:
-                publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
-                self.save_object(publication_fos)
+        if 'fieldOfStudy' in publication_data:
+            fields_of_study = publication_data['fieldOfStudy']
+            for fos_data in fields_of_study:
+                fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'])
+                fos.level = 2
+                fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
+                print(fos)
+                if fos:
+                    publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
+                    self.save_object(publication_fos)
 
         return publication
         # todo
