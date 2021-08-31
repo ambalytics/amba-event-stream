@@ -2,6 +2,7 @@ from event_stream.models.model import *
 from sqlalchemy import Table, Column, MetaData, create_engine
 import os
 import urllib
+import psycopg2
 from sqlalchemy.orm import sessionmaker
 
 
@@ -33,13 +34,22 @@ class DAO(object):
         return obj
 
     def get_object(self, table, key):
-        return self.session.query(table).filter_by(**key).first()
+        try:
+            result = self.session.query(table).filter_by(**key).first()
+        except psycopg2.errors.UniqueViolation as ex:
+            print(ex)
+        else:
+            return result
+        finally:
+            return None
 
     def save_if_not_exist(self, obj, table, kwargs):
         obj_db = self.get_object(table, kwargs)
-        if obj_db and obj_db.count() > 0:
+        if obj_db:
+            print('does exists')
             return obj_db
         else:
+            print('does not exists')
             return self.save_object(obj)
 
     def get_publication(self, doi):
