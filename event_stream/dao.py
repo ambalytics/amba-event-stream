@@ -29,11 +29,13 @@ class DAO(object):
         self.session = Session()
 
     def save_object(self, obj):
-        try:
-            self.session.add(obj)
-            self.session.commit()
-        except IntegrityError:
-            self.session.rollback()
+        # try:
+        self.session.add(obj)
+        self.session.commit()
+        # except IntegrityError:
+        #     print('error')
+        #     self.session.rollback()
+
 
     def get_object(self, table, key):
         result = self.session.query(table).filter_by(**key).first()
@@ -45,13 +47,9 @@ class DAO(object):
         if hasattr(obj, 'id') and obj.id:
             obj_db = self.get_object(table, kwargs)
             if obj_db:
-                # print('does exists')
                 return obj_db
-            else:
-                # print('does not exists')
-                self.save_object(obj)
-                self.session.refresh(obj)
-                return obj
+        self.save_object(obj)
+        return obj
 
     def get_publication(self, doi):
         return self.get_object(Publication, {'doi': doi})
@@ -65,13 +63,18 @@ class DAO(object):
                                   normalizedTitle=publication_data['normalizedTitle'],
                                   abstract=publication_data['abstract'])
         publication = self.save_if_not_exist(publication, Publication, {'doi': publication.doi})
+        print('publication.doi')
+        print(publication.doi)
+        print(publication.id)
+
 
         authors = publication_data['authors']
         for author_data in authors:
             author = Author(name=author_data['name'], normalizedName=author_data['normalizedName'])
 
             author = self.save_if_not_exist(author, Author, {'normalizedName': author.normalizedName})
-            print(author)
+            print('author.id')
+            print(author.id)
             if author:
                 publication_authors = PublicationAuthor(**{'authorId': author.id, 'publicationDoi': publication.doi})
                 self.save_object(publication_authors)
@@ -80,7 +83,8 @@ class DAO(object):
         for sources_data in sources:
             source = Source(title=sources_data['title'], url=sources_data['url'])
             source = self.save_if_not_exist(source, Source, {'title': source.title})
-            print(source)
+            print('source.id')
+            print(source.id)
             if source:
                 publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
                 self.save_object(publication_sources)
@@ -91,7 +95,8 @@ class DAO(object):
                 fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'])
                 fos.level = 2
                 fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
-                print(fos)
+                print('fos.id')
+                print(fos.id)
                 if fos:
                     publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
                     self.save_object(publication_fos)
