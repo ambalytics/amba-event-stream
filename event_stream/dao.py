@@ -36,10 +36,10 @@ class DAO(object):
 
     def save_if_not_exist(self, obj, table, kwargs):
         obj_db = self.get_object(table, kwargs)
-        if obj_db.count() > 0:
-            return self.save_object(obj)
-        else:
+        if obj_db and obj_db.count() > 0:
             return obj_db
+        else:
+            return self.save_object(obj)
 
     def get_publication(self, doi):
         return self.get_object(Publication, {'doi': doi})
