@@ -95,12 +95,12 @@ class PublicationSource(Base):
 
 
 class DiscussionData(Base):
-    __tablename__ = 'DiscussionData'
-
-    id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
-    publicationId = sa.Column(sa.Integer(), sa.ForeignKey('Publication.id'))
+    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
     createdAt = sa.Column(sa.TIMESTAMP())
-    score = sa.Column(sa.Integer())
+    score = sa.Column(sa.Float())
+    time_score = sa.Column(sa.Float())
+    type_score = sa.Column(sa.Float())
+    user_score = sa.Column(sa.Float())
     abstractDifference = sa.Column(sa.Float())
     length = sa.Column(sa.Integer())
     questions = sa.Column(sa.Integer())
@@ -170,4 +170,4 @@ class DiscussionHashtagData(Base):
     __tablename__ = 'DiscussionHashtagData'
 
     discussionDataId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionData.id'), primary_key=True)
-    iscussionHashtagId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionHashtag.id'), primary_key=True)
+    discussionHashtagId = sa.Column(sa.Integer(), sa.ForeignKey('DiscussionHashtag.id'), primary_key=True)
