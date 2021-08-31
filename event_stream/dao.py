@@ -34,8 +34,8 @@ class DAO(object):
     def get_object(self, table, key):
         return self.session.query(table).filter_by(key).first()
 
-    def save_if_not_exist(self, obj, table, **kwargs):
-        obj_db = self.get_object(table, **kwargs)
+    def save_if_not_exist(self, obj, table, kwargs):
+        obj_db = self.get_object(table, kwargs)
         if not obj_db:
             return self.save_object(obj)
         else:
@@ -49,13 +49,13 @@ class DAO(object):
                                           title=publication_data['title'],
                                           normalizedTitle=publication_data['normalizedTitle'],
                                           abstract=publication_data['abstract'])
-        publication = self.save_if_not_exist(publication, Publication, doi=publication.doi)
+        publication = self.save_if_not_exist(publication, Publication, {'doi': publication.doi})
 
         authors = publication_data['authors']
         for author_data in authors:
             author = Author(name=author_data['name'],  normalizedName=author_data['normalizedName'])
 
-            author = self.save_if_not_exist(author, Author, normalizedName=author.normalizedName)
+            author = self.save_if_not_exist(author, Author, {'normalizedName': author.normalizedName})
 
             publication_authors = PublicationAuthor({'authorId': author.id, 'publicationId': publication.id})
             self.save_object(publication_authors)
@@ -63,7 +63,7 @@ class DAO(object):
         sources = publication_data['source_id']
         for sources_data in sources:
             source = Source(title=sources_data['title'],  url=sources_data['url'])
-            source = self.save_if_not_exist(source, Source, title=source.title)
+            source = self.save_if_not_exist(source, Source, {'title': source.title})
             publication_sources = PublicationSource({'sourceId': source.id, 'publicationId': publication.id})
             self.save_object(publication_sources)
 
@@ -71,7 +71,7 @@ class DAO(object):
         for fos_data in fields_of_study:
             fos = FieldOfStudy(name=fos_data['name'],  normalizedName=fos_data['normalizedName'])
             fos.level = 2
-            fos = self.save_if_not_exist(fos, FieldOfStudy, normalizedName=fos.normalizedName)
+            fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
             publication_fos = PublicationFieldOfStudy({'fieldOfStudyId': fos.id, 'publicationId': publication.id})
             self.save_object(publication_fos)
 
