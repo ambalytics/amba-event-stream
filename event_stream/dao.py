@@ -31,10 +31,9 @@ class DAO(object):
     def save_object(self, obj):
         try:
             self.session.add(obj)
-            return self.session.commit()
+            self.session.commit()
         except IntegrityError:
             self.session.rollback()
-        return None
 
     def get_object(self, table, key):
         result = self.session.query(table).filter_by(**key).first()
@@ -50,7 +49,9 @@ class DAO(object):
                 return obj_db
             else:
                 print('does not exists')
-                return self.save_object(obj)
+                self.save_object(obj)
+                self.session.refresh(obj)
+                return obj
 
     def get_publication(self, doi):
         return self.get_object(Publication, {'doi': doi})
