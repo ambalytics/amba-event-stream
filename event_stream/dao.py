@@ -28,7 +28,7 @@ class DAO(object):
         self.session = Session()
 
     def save_object(self, obj):
-        self.session.add(obj)
+        self.session.merge(obj)
         self.session.commit()
         self.session.refresh(obj)
         return obj
