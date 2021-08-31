@@ -6,7 +6,7 @@ import os
 import urllib
 import psycopg2
 from sqlalchemy.exc import IntegrityError
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 class DAO(object):
@@ -27,7 +27,9 @@ class DAO(object):
         Base.metadata.create_all(engine)
         # database = databases.Database(DATABASE_URL)
 
-        Session = sessionmaker(bind=engine)
+        # Session = sessionmaker(bind=engine)
+        session_factory = sessionmaker(bind=engine)
+        Session = scoped_session(session_factory)
         self.session = Session()
 
     def save_object(self, obj):
