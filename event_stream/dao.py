@@ -18,7 +18,8 @@ class DAO(object):
         DATABASE_URL = 'postgresql://{}:{}@{}:{}/{}'.format(db_username, db_password, host_server,
                                                             db_server_port, database_name)
         print(DATABASE_URL)
-        engine = create_engine('postgresql+psycopg2://streams:REPLACE_ME@postgres:5432/amba')
+        # engine = create_engine('postgresql+psycopg2://streams:REPLACE_ME@postgres:5432/amba')
+        engine = create_engine(DATABASE_URL)
         Base.metadata.create_all(engine)
         # database = databases.Database(DATABASE_URL)
 
