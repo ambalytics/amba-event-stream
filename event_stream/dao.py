@@ -29,14 +29,17 @@ class DAO(object):
         # database = databases.Database(DATABASE_URL)
 
         # Session = sessionmaker(bind=engine)
+        session_factory = sessionmaker(bind=self.engine)
+        Session = scoped_session(session_factory)
+        self.session = Session()
 
     def save_object(self, obj):
-        # try:
-        self.session.add(obj)
-        self.session.commit()
-        # except IntegrityError:
-        #     print('error')
-        #     self.session.rollback()
+        try:
+            self.session.add(obj)
+            self.session.commit()
+        except IntegrityError:
+            print('IntegrityError')
+            self.session.rollback()
 
     def get_object(self, table, key):
         result = self.session.query(table).filter_by(**key).first()
@@ -56,9 +59,9 @@ class DAO(object):
         return self.get_object(Publication, {'doi': doi})
 
     def save_publication(self, publication_data):
-        session_factory = sessionmaker(bind=self.engine)
-        Session = scoped_session(session_factory)
-        self.session = Session()
+        # session_factory = sessionmaker(bind=self.engine)
+        # Session = scoped_session(session_factory)
+        # self.session = Session()
 
         publication = Publication(doi=publication_data['doi'], type=publication_data['type'],
                                   pubDate=publication_data['pubDate'], year=publication_data['year'],
@@ -106,7 +109,7 @@ class DAO(object):
                     publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
                     self.save_if_not_exist(publication_fos, PublicationFieldOfStudy, {'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
 
-        self.session.close()
+        # self.session.close()
         return publication
         # todo
         # publicationCitations = PublicationCitations()
