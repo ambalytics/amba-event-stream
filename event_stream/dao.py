@@ -34,7 +34,7 @@ class DAO(object):
             self.session.commit()
         except IntegrityError:
             self.session.rollback()
-        self.session.refresh(obj)
+        # self.session.refresh(obj)
         return obj
 
     def get_object(self, table, key):
