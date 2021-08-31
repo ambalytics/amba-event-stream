@@ -1,3 +1,5 @@
+import logging
+
 from event_stream.models.model import *
 from sqlalchemy import Table, Column, MetaData, create_engine
 import os
@@ -63,19 +65,18 @@ class DAO(object):
                                   normalizedTitle=publication_data['normalizedTitle'],
                                   abstract=publication_data['abstract'])
         publication = self.save_if_not_exist(publication, Publication, {'doi': publication.doi})
-        print('publication.doi')
-        print(publication.doi)
-        print(publication.id)
-
+        logging.warning('publication.doi')
+        logging.warning(publication.doi)
+        logging.warning(publication.id)
 
         authors = publication_data['authors']
         for author_data in authors:
             author = Author(name=author_data['name'], normalizedName=author_data['normalizedName'])
 
             author = self.save_if_not_exist(author, Author, {'normalizedName': author.normalizedName})
-            print('author.id')
-            print(author.id)
-            if author:
+            logging.warning('author.id')
+            logging.warning(author.id)
+            if author.id:
                 publication_authors = PublicationAuthor(**{'authorId': author.id, 'publicationDoi': publication.doi})
                 self.save_object(publication_authors)
 
@@ -83,21 +84,21 @@ class DAO(object):
         for sources_data in sources:
             source = Source(title=sources_data['title'], url=sources_data['url'])
             source = self.save_if_not_exist(source, Source, {'title': source.title})
-            print('source.id')
-            print(source.id)
-            if source:
+            logging.warning('source.id')
+            logging.warning(source.id)
+            if source.id:
                 publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
                 self.save_object(publication_sources)
 
-        if 'fieldOfStudy' in publication_data:
-            fields_of_study = publication_data['fieldOfStudy']
+        if 'fieldsOfStudy' in publication_data:
+            fields_of_study = publication_data['fieldsOfStudy']
             for fos_data in fields_of_study:
                 fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'])
                 fos.level = 2
                 fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
-                print('fos.id')
-                print(fos.id)
-                if fos:
+                logging.warning('fos.id')
+                logging.warning(fos.id)
+                if fos.id:
                     publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
                     self.save_object(publication_fos)
 
