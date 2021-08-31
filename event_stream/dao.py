@@ -80,17 +80,17 @@ class DAO(object):
             logging.warning(author.id)
             if author.id:
                 publication_authors = PublicationAuthor(**{'authorId': author.id, 'publicationDoi': publication.doi})
-                self.save_object(publication_authors)
+                self.save_if_not_exist(publication_authors, PublicationAuthor, {'authorId': author.id, 'publicationDoi': publication.doi})
 
         sources = publication_data['source_id']
         for sources_data in sources:
             source = Source(title=sources_data['title'], url=sources_data['url']) # todo no doi url ?
-            source = self.save_if_not_exist(source, Source, {'url': source.url})
+            source = self.save_if_not_exist(source, Source, {'title': source.title})
             logging.warning('source.id')
             logging.warning(source.id)
             if source.id:
                 publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
-                self.save_object(publication_sources)
+                self.save_if_not_exist(publication_sources, PublicationSource, {'sourceId': source.id, 'publicationDoi': publication.doi})
 
         if 'fieldsOfStudy' in publication_data:
             fields_of_study = publication_data['fieldsOfStudy']
@@ -102,7 +102,7 @@ class DAO(object):
                 logging.warning(fos.id)
                 if fos.id:
                     publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
-                    self.save_object(publication_fos)
+                    self.save_if_not_exist(publication_fos, PublicationFieldOfStudy, {'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
 
         return publication
         # todo
