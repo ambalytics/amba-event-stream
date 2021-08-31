@@ -71,24 +71,29 @@ class DAO(object):
             author = Author(name=author_data['name'], normalizedName=author_data['normalizedName'])
 
             author = self.save_if_not_exist(author, Author, {'normalizedName': author.normalizedName})
-
-            publication_authors = PublicationAuthor(**{'authorId': author.id, 'publicationDoi': publication.doi})
-            self.save_object(publication_authors)
+            print(author)
+            if author:
+                publication_authors = PublicationAuthor(**{'authorId': author.id, 'publicationDoi': publication.doi})
+                self.save_object(publication_authors)
 
         sources = publication_data['source_id']
         for sources_data in sources:
             source = Source(title=sources_data['title'], url=sources_data['url'])
             source = self.save_if_not_exist(source, Source, {'title': source.title})
-            publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
-            self.save_object(publication_sources)
+            print(source)
+            if source:
+                publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
+                self.save_object(publication_sources)
 
         fields_of_study = publication_data['fieldOfStudy']
         for fos_data in fields_of_study:
             fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'])
             fos.level = 2
             fos = self.save_if_not_exist(fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
-            publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
-            self.save_object(publication_fos)
+            print(fos)
+            if fos:
+                publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
+                self.save_object(publication_fos)
 
         return publication
         # todo
