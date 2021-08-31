@@ -43,7 +43,7 @@ class DAO(object):
         return result
 
     def save_if_not_exist(self, obj, table, kwargs):
-        if not obj.id:
+        if id not in obj:
             obj_db = self.get_object(table, kwargs)
             if obj_db:
                 print('does exists')
