@@ -95,7 +95,7 @@ class PublicationSource(Base):
 
 
 class DiscussionData(Base):
-    publicationDoi = sa.Column(sa.Integer(), sa.ForeignKey('Publication.doi'))
+    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'))
     createdAt = sa.Column(sa.TIMESTAMP())
     score = sa.Column(sa.Float())
     time_score = sa.Column(sa.Float())
