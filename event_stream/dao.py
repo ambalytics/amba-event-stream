@@ -45,10 +45,10 @@ class DAO(object):
         if hasattr(obj, 'id') and obj.id:
             obj_db = self.get_object(table, kwargs)
             if obj_db:
-                print('does exists')
+                # print('does exists')
                 return obj_db
             else:
-                print('does not exists')
+                # print('does not exists')
                 self.save_object(obj)
                 self.session.refresh(obj)
                 return obj
