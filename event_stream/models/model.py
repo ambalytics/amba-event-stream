@@ -97,6 +97,7 @@ class PublicationSource(Base):
 class DiscussionData(Base):
     __tablename__ = 'DiscussionData'
 
+    id = sa.Column(sa.Integer(), autoincrement=True, primary_key=True)
     publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'))
     createdAt = sa.Column(sa.TIMESTAMP())
     score = sa.Column(sa.Float())
