@@ -67,6 +67,7 @@ class DAO(object):
                                   normalizedTitle=publication_data['normalizedTitle'],
                                   abstract=publication_data['abstract'])
         publication = self.save_if_not_exist(publication, Publication, {'doi': publication.doi})
+
         logging.warning('publication.doi')
         logging.warning(publication.doi)
         logging.warning(publication.id)
