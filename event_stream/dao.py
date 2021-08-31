@@ -48,10 +48,10 @@ class DAO(object):
         return result
 
     def save_if_not_exist(self, obj, table, kwargs):
-        if hasattr(obj, 'id') and obj.id:
-            obj_db = self.get_object(table, kwargs)
-            if obj_db:
-                return obj_db
+        obj_db = self.get_object(table, kwargs)
+        if obj_db:
+            return obj_db
+
         self.save_object(obj)
         return obj
 
@@ -84,8 +84,8 @@ class DAO(object):
 
         sources = publication_data['source_id']
         for sources_data in sources:
-            source = Source(title=sources_data['title'], url=sources_data['url'])
-            source = self.save_if_not_exist(source, Source, {'title': source.title})
+            source = Source(title=sources_data['title'], url=sources_data['url']) # todo no doi url ?
+            source = self.save_if_not_exist(source, Source, {'url': source.url})
             logging.warning('source.id')
             logging.warning(source.id)
             if source.id:
