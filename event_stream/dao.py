@@ -29,24 +29,18 @@ class DAO(object):
         self.session = Session()
 
     def save_object(self, obj):
-        self.session.merge(obj)
         try:
-            self.session.commit()
+            self.session.add(obj)
+            return self.session.commit()
         except IntegrityError:
             self.session.rollback()
-        # self.session.refresh(obj)
-        return obj
+        return None
 
     def get_object(self, table, key):
-        try:
-            result = self.session.query(table).filter_by(**key).first()
-        except psycopg2.errors.UniqueViolation as ex:
-            # print(ex)
-            self.session.rollback()
-        else:
-            return result
-        finally:
+        result = self.session.query(table).filter_by(**key).first()
+        if not result:
             return None
+        return result
 
     def save_if_not_exist(self, obj, table, kwargs):
         if not obj.id:
