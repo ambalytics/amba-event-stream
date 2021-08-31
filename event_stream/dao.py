@@ -3,6 +3,7 @@ from sqlalchemy import Table, Column, MetaData, create_engine
 import os
 import urllib
 import psycopg2
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker
 
 
@@ -29,7 +30,10 @@ class DAO(object):
 
     def save_object(self, obj):
         self.session.merge(obj)
-        self.session.commit()
+        try:
+            self.session.commit()
+        except IntegrityError:
+            self.session.rollback()
         self.session.refresh(obj)
         return obj
 
