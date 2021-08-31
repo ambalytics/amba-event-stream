@@ -48,13 +48,14 @@ class DAO(object):
             return None
 
     def save_if_not_exist(self, obj, table, kwargs):
-        obj_db = self.get_object(table, kwargs)
-        if obj_db:
-            print('does exists')
-            return obj_db
-        else:
-            print('does not exists')
-            return self.save_object(obj)
+        if not obj.id:
+            obj_db = self.get_object(table, kwargs)
+            if obj_db:
+                print('does exists')
+                return obj_db
+            else:
+                print('does not exists')
+                return self.save_object(obj)
 
     def get_publication(self, doi):
         return self.get_object(Publication, {'doi': doi})
