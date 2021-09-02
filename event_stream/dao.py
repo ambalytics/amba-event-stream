@@ -119,6 +119,7 @@ class DAO(object):
 
         session.close()
         return publication
-        # todo
+        # todo add perculator!!!!!!
+        # use different names for config until we remove gql?
         # publicationCitations = PublicationCitations()
         # publicationReferences = PublicationReferences(**author_data)

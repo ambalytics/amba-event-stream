@@ -104,6 +104,8 @@ class DiscussionData(Base):
     timeScore = sa.Column(sa.Float())
     typeScore = sa.Column(sa.Float())
     userScore = sa.Column(sa.Float())
+    language = sa.Column(sa.String())
+    source = sa.Column(sa.String())
     abstractDifference = sa.Column(sa.Float())
     length = sa.Column(sa.Integer())
     questions = sa.Column(sa.Integer())

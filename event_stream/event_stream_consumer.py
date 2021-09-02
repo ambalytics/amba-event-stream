@@ -144,7 +144,7 @@ class EventStreamConsumer(EventStreamBase):
         """
         logging.debug(self.log + "working %s" % os.getpid())
         while self.running:
-            time.sleep(0.001)
+            time.sleep(0.005)
             try:
                 item = queue.get()
             except queue.Empty:
