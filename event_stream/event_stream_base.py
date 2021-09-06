@@ -36,7 +36,6 @@ class EventStreamBase(object):
     state_separator = "_"
     relation_type_separator = "-"
 
-    kafka_boot_time = 15
     bootstrap_servers = ['kafka:9092']
     group_id = 'worker'
     consumer_timeout_ms = 5000
@@ -142,13 +141,17 @@ class EventStreamBase(object):
         logging.warning(self.log + "Unable to resolve event, topic_name %s not found" % topic_name)
         return False
 
-    def start(self, i=0):
-        e = EventStreamBase(i)
-        logging.debug(self.log + 'Start %s' % str(i))
+    @staticmethod
+    def setup_logging():
         logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%H:%M:%S")
+
+    @staticmethod
+    def start(i=0):
+        e = EventStreamBase(i)
+        EventStreamBase.setup_logging()
+        logging.debug(EventStreamBase.log + 'Start %s' % str(i))
         return e
 
 
 if __name__ == '__main__':
-    e = EventStreamBase(1)
-    print(e.build_topic_list())
+    EventStreamBase.start()

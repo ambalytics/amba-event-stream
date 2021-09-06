@@ -60,9 +60,10 @@ class EventStreamConsumer(EventStreamBase):
     process_number = 4
     log = "EventStreamConsumer " + str(id) + " "
 
-    def start(self, i=0):
-
-        e.consume()
+    @staticmethod
+    def start(i=0):
+        esc = super().start(i)
+        esc.consume()
 
     def create_consumer(self):
         """create the consumer, connect to kafka
@@ -174,5 +175,4 @@ class EventStreamConsumer(EventStreamBase):
 
 
 if __name__ == '__main__':
-    e = EventStreamConsumer(1)
-    e.consume()
+    EventStreamConsumer.start(0)
