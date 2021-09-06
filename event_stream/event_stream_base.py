@@ -82,7 +82,7 @@ class EventStreamBase(object):
                     result.append(self.build_topic_name(c_state, c_o_topic))
 
         self.topics = result
-        logging.warning("%s current topics for events: %s" % (self.log, self.topics))
+        logging.debug("%s current topics for events: %s" % (self.log, self.topics))
         return result
 
     def build_topic_name(self, state, relation_type=''):

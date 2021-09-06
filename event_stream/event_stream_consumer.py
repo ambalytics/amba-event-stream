@@ -72,7 +72,7 @@ class EventStreamConsumer(EventStreamBase):
     def create_consumer(self):
         """create the consumer, connect to kafka
         """
-        logging.warning(self.log + "rt: %s" % self.relation_type)
+        logging.debug(self.log + "rt: %s" % self.relation_type)
 
         if self.state == 'all':
             self.topics = self.build_topic_list()
@@ -90,17 +90,17 @@ class EventStreamConsumer(EventStreamBase):
                     self.topics.append(self.get_topic_name(state=state, relation_type=relation_type))
 
         # self.topic_name = 'tweets'
-        logging.warning(self.log + "get consumer for topic: %s" % self.topics)
+        logging.debug(self.log + "get consumer for topic: %s" % self.topics)
         # consumer.topics()
         self.consumer = KafkaConsumer(group_id=self.group_id,
                                       bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
                                       consumer_timeout_ms=self.consumer_timeout_ms)
 
         for topic in self.topics:
-            logging.warning(self.log + "consumer subscribe: %s" % topic)
+            logging.debug(self.log + "consumer subscribe: %s" % topic)
             self.consumer.subscribe(topic)
 
-        logging.warning(self.log + "consumer subscribed to: %s" % self.consumer.topics())
+        logging.debug(self.log + "consumer subscribed to: %s" % self.consumer.topics())
 
     def consume(self):
         """consume messages and add them to a queue to share with the worker processes
@@ -169,13 +169,13 @@ class EventStreamConsumer(EventStreamBase):
         Arguments:
             json_msg: the message to do stuff with
         """
-        logging.warning(self.log + "on message")
+        logging.debug(self.log + "on message")
 
     def stop(self):
         """stop the consumer
         """
         self.running = False
-        logging.warning(self.log + 'stop running consumer')
+        logging.debug(self.log + 'stop running consumer')
 
 
 if __name__ == '__main__':
