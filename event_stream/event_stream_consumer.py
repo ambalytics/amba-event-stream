@@ -62,6 +62,8 @@ class EventStreamConsumer(EventStreamBase):
 
     @staticmethod
     def start(i=0):
+        """start the consumer
+        """
         esc = super().start(i)
         esc.consume()
 
