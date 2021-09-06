@@ -4,10 +4,8 @@ from event_stream.models.model import *
 from sqlalchemy import Table, Column, MetaData, create_engine, inspect, text, bindparam
 import os
 import urllib
-import psycopg2
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlmodel import Session
 
 
 class DAO(object):

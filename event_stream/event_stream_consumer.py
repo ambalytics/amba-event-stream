@@ -65,7 +65,6 @@ class EventStreamConsumer(EventStreamBase):
         """start the consumer
         """
         esc = EventStreamConsumer(i)
-        EventStreamConsumer.setup_logging()
         logging.debug(EventStreamBase.log + 'Start %s' % str(i))
         esc.consume()
 

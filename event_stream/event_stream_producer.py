@@ -34,7 +34,3 @@ class EventStreamProducer(EventStreamBase):
         """create the producer
         """
         self.producer = KafkaProducer(bootstrap_servers=self.bootstrap_servers, api_version=self.api_version)
-
-
-if __name__ == '__main__':
-    EventStreamProducer.start(0)

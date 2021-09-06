@@ -67,6 +67,7 @@ class EventStreamBase(object):
         self.counter = counter_in
         self.log = self.log + str(self.id) + ": "
         self.bootstrap_servers = [os.environ.get('KAFKA_BOOTRSTRAP_SERVER', 'kafka:9092')]
+        self.setup_logging()
 
     def build_topic_list(self):
         """build a list of topics from the configs
@@ -144,13 +145,6 @@ class EventStreamBase(object):
     @staticmethod
     def setup_logging():
         logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%H:%M:%S")
-
-    @staticmethod
-    def start(i=0):
-        e = EventStreamBase(i)
-        EventStreamBase.setup_logging()
-        logging.debug(EventStreamBase.log + 'Start %s' % str(i))
-        return e
 
 
 if __name__ == '__main__':
