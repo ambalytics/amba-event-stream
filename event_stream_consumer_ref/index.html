@@ -755,7 +755,6 @@ uses multiprocessing to share workload</p>
     <span class="sd">&quot;&quot;&quot;start the consumer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">esc</span> <span class="o">=</span> <span class="n">EventStreamConsumer</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-    <span class="n">EventStreamConsumer</span><span class="o">.</span><span class="n">setup_logging</span><span class="p">()</span>
     <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">EventStreamBase</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;Start </span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
     <span class="n">esc</span><span class="o">.</span><span class="n">consume</span><span class="p">()</span>
 </code></pre></div>
