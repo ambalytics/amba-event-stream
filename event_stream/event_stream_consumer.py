@@ -64,7 +64,9 @@ class EventStreamConsumer(EventStreamBase):
     def start(i=0):
         """start the consumer
         """
-        esc = super().start(i)
+        esc = EventStreamConsumer(i)
+        EventStreamConsumer.setup_logging()
+        logging.debug(EventStreamBase.log + 'Start %s' % str(i))
         esc.consume()
 
     def create_consumer(self):
