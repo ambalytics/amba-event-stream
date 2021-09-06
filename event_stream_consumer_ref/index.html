@@ -338,6 +338,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.start" class="md-nav__link">
+    start()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#event_stream.event_stream_consumer.EventStreamConsumer.stop" class="md-nav__link">
     stop()
   </a>
@@ -444,6 +451,13 @@
           <li class="md-nav__item">
   <a href="#event_stream.event_stream_consumer.EventStreamConsumer.on_message" class="md-nav__link">
     on_message()
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#event_stream.event_stream_consumer.EventStreamConsumer.start" class="md-nav__link">
+    start()
   </a>
   
 </li>
@@ -715,6 +729,38 @@ uses multiprocessing to share workload</p>
 
   </div>
 
+
+
+  <div class="doc doc-object doc-method">
+
+
+
+<h3 id="event_stream.event_stream_consumer.EventStreamConsumer.start" class="doc doc-heading">
+<code class="highlight language-python"><span class="n">start</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span></code>
+
+  <span class="doc doc-properties">
+      <small class="doc doc-property doc-property-staticmethod"><code>staticmethod</code></small>
+  </span>
+
+</h3>
+
+    <div class="doc doc-contents ">
+
+      <p>start the consumer</p>
+
+        <details class="quote">
+          <summary>Source code in <code>event_stream/event_stream_consumer.py</code></summary>
+          <div class="highlight"><pre><span></span><code><span class="nd">@staticmethod</span>
+<span class="k">def</span> <span class="nf">start</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;start the consumer</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">esc</span> <span class="o">=</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">start</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="n">esc</span><span class="o">.</span><span class="n">consume</span><span class="p">()</span>
+</code></pre></div>
+        </details>
+    </div>
+
+  </div>
 
 
 
