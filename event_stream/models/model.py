@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from sqlalchemy import JSON
 from sqlalchemy.ext.declarative import declarative_base
 from enum import Enum
 
@@ -152,14 +153,16 @@ class DiscussionEntityData(Base):
     __tablename__ = 'DiscussionEntityData'
 
     discussionDataId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionData.id'), nullable=False, primary_key=True)
-    discussionEntityId = sa.Column(sa.BigInteger(),  sa.ForeignKey('DiscussionEntity.id'), nullable=False, primary_key=True)
+    discussionEntityId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionEntity.id'), nullable=False,
+                                   primary_key=True)
 
 
 class DiscussionAuthorData(Base):
     __tablename__ = 'DiscussionAuthorData'
 
     discussionDataId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionData.id'), nullable=False, primary_key=True)
-    discussionAuthorId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionAuthor.id'), nullable=False, primary_key=True)
+    discussionAuthorId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionAuthor.id'), nullable=False,
+                                   primary_key=True)
 
 
 class DiscussionWordData(Base):
@@ -174,4 +177,21 @@ class DiscussionHashtagData(Base):
     __tablename__ = 'DiscussionHashtagData'
 
     discussionDataId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionData.id'), nullable=False, primary_key=True)
-    discussionHashtagId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionHashtag.id'), nullable=False, primary_key=True)
+    discussionHashtagId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionHashtag.id'), nullable=False,
+                                    primary_key=True)
+
+
+class AggregatedData(Base):
+    __tablename__ = 'AggregatedData'
+
+    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
+    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'))
+    score = sa.Column(sa.Float())
+
+
+class DebugData(Base):
+    __tablename__ = 'DebugData'
+
+    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
+    info = sa.Column(sa.String())
+    data = sa.Column(JSON())

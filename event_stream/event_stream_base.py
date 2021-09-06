@@ -142,6 +142,12 @@ class EventStreamBase(object):
         logging.warning(self.log + "Unable to resolve event, topic_name %s not found" % topic_name)
         return False
 
+    def start(self, i=0):
+        e = EventStreamBase(i)
+        logging.debug(self.log + 'Start %s' % str(i))
+        logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%H:%M:%S")
+        return e
+
 
 if __name__ == '__main__':
     e = EventStreamBase(1)
