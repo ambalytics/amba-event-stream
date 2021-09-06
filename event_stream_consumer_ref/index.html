@@ -644,7 +644,7 @@ uses multiprocessing to share workload</p>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">create_consumer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;create the consumer, connect to kafka</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;rt: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;rt: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">relation_type</span><span class="p">)</span>
 
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">topics</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">build_topic_list</span><span class="p">()</span>
@@ -662,17 +662,17 @@ uses multiprocessing to share workload</p>
                 <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_topic_name</span><span class="p">(</span><span class="n">state</span><span class="o">=</span><span class="n">state</span><span class="p">,</span> <span class="n">relation_type</span><span class="o">=</span><span class="n">relation_type</span><span class="p">))</span>
 
     <span class="c1"># self.topic_name = &#39;tweets&#39;</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;get consumer for topic: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;get consumer for topic: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">)</span>
     <span class="c1"># consumer.topics()</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span> <span class="o">=</span> <span class="n">KafkaConsumer</span><span class="p">(</span><span class="n">group_id</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">,</span>
                                   <span class="n">bootstrap_servers</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bootstrap_servers</span><span class="p">,</span> <span class="n">api_version</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">api_version</span><span class="p">,</span>
                                   <span class="n">consumer_timeout_ms</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">consumer_timeout_ms</span><span class="p">)</span>
 
     <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topics</span><span class="p">:</span>
-        <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;consumer subscribe: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">topic</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;consumer subscribe: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">topic</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">subscribe</span><span class="p">(</span><span class="n">topic</span><span class="p">)</span>
 
-    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;consumer subscribed to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">topics</span><span class="p">())</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;consumer subscribed to: </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="o">.</span><span class="n">topics</span><span class="p">())</span>
 </code></pre></div>
         </details>
     </div>
@@ -722,7 +722,7 @@ uses multiprocessing to share workload</p>
 <span class="sd">    Arguments:</span>
 <span class="sd">        json_msg: the message to do stuff with</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;on message&quot;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s2">&quot;on message&quot;</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
@@ -786,7 +786,7 @@ uses multiprocessing to share workload</p>
     <span class="sd">&quot;&quot;&quot;stop the consumer</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">running</span> <span class="o">=</span> <span class="kc">False</span>
-    <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;stop running consumer&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">log</span> <span class="o">+</span> <span class="s1">&#39;stop running consumer&#39;</span><span class="p">)</span>
 </code></pre></div>
         </details>
     </div>
