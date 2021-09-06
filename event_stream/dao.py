@@ -149,7 +149,14 @@ class DAO(object):
         # publicationReferences = PublicationReferences(**author_data)
 
     def save_discussion_data(self, event_data):
-        # use doi or id?
+        """save a discussion data row from event data
+
+        Argumetns:
+            event_data: to be saved
+        """
+        session_factory = sessionmaker(bind=self.engine)
+        Session = scoped_session(session_factory)
+        session = Session()
         event_data['sourceId'] = 'twitter'  # todo
         if 'location' not in event_data['subj']['processed']:
             event_data['subj']['processed']['location'] = 'unknown'
@@ -181,41 +188,42 @@ class DAO(object):
             authorName=event_data['subj']['processed']['name'],  # make this a table?
             authorLocation=event_data['subj']['processed']['location'],
             sourceId=event_data['sourceId'])
-        self.save_object(discussion_data)
+        self.save_object(session, discussion_data)
 
         if 'context_annotations' in event_data['subj']['data']:
             context_entity = event_data['subj']['data']['context_annotations']
             for entity_data in context_entity:
                 entity = DiscussionEntity(entity=entity_data['entity']['name'])
-                entity = self.save_if_not_exist(entity, DiscussionEntity, {'entity': entity.entity})
+                entity = self.save_if_not_exist(session, entity, DiscussionEntity, {'entity': entity.entity})
 
                 publication_entity = DiscussionEntityData(
                     **{'discussionDataId': discussion_data.id, 'discussionEntityId': entity.id})
-                self.save_if_not_exist(publication_entity, DiscussionEntityData,
+                self.save_if_not_exist(session, publication_entity, DiscussionEntityData,
                                        {'discussionDataId': discussion_data.id, 'discussionEntityId': entity.id})
 
         if 'words' in event_data['subj']['processed']:
             words = event_data['subj']['processed']['words']
             for words_data in words:
                 word = DiscussionWord(word=words_data[0])
-                word = self.save_if_not_exist(word, DiscussionWord, {'word': word.word})
+                word = self.save_if_not_exist(session, word, DiscussionWord, {'word': word.word})
 
                 publication_words = DiscussionWordData(
                     **{'discussionDataId': discussion_data.id, 'discussionWordId': word.id, 'count': words_data[1]})
-                self.save_object(publication_words)
-                self.save_if_not_exist(publication_words, DiscussionWordData,
+                self.save_object(session, publication_words)
+                self.save_if_not_exist(session, publication_words, DiscussionWordData,
                                        {'discussionDataId': discussion_data.id, 'discussionWordId': word.id})
 
         if 'entities' in event_data['subj']['data'] and 'hashtags' in event_data['subj']['data']['entities']:
             hashtags = event_data['subj']['data']['entities']['hashtags']
             for h_data in hashtags:
                 hashtag = DiscussionHashtag(hashtag=h_data['tag'])
-                hashtag = self.save_if_not_exist(hashtag, DiscussionHashtag, {'hashtag': hashtag.hashtag})
+                hashtag = self.save_if_not_exist(session, hashtag, DiscussionHashtag, {'hashtag': hashtag.hashtag})
 
                 publication_h = DiscussionHashtagData(
                     **{'discussionDataId': discussion_data.id, 'discussionHashtagId': hashtag.id})
-                self.save_object(publication_h)
-                self.save_if_not_exist(publication_h, DiscussionHashtagData,
+                self.save_object(session, publication_h)
+                self.save_if_not_exist(session, publication_h, DiscussionHashtagData,
                                        {'discussionDataId': discussion_data.id, 'discussionHashtagId': hashtag.id})
 
+        session.close()
         return discussion_data
