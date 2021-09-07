@@ -67,13 +67,16 @@ class DAO(object):
         Session = scoped_session(session_factory)
 
         # todo add sources
+        params = {'doi': doi, }
 
         session = Session()
-        pub = session.query(Publication).filter_by(doi=doi).all()
+        # pub = session.query(Publication).filter_by(doi=doi).all()
+        p = text("""SELECT * FROM "Publication" WHERE doi=:doi""")
+        p = p.bindparams(bindparam('doi'))
+        pub = session.execute(p, params).fetchall()
 
         result = None
         if pub:
-            params = {'doi': doi, }
 
             a = text("""SELECT name FROM "PublicationAuthor" as p
                         JOIN "Author" as a on (a.id = p."authorId")
@@ -93,7 +96,7 @@ class DAO(object):
             s = s.bindparams(bindparam('doi'))
             sources = session.execute(s, params).fetchall()
 
-            result = DAO.object_as_dict(pub)
+            result = pub
             result['authors']: authors
             result['fieldsOfStudy']: fos
             result['source_id']: sources
