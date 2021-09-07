@@ -66,27 +66,31 @@ class DAO(object):
         session_factory = sessionmaker(bind=self.engine)
         Session = scoped_session(session_factory)
 
+        # todo add sources
+
         session = Session()
         pub = session.query(Publication).filter_by(doi=doi).all()
-        a = text("""SELECT name FROM "PublicationAuthor" as p
-                    JOIN "Author" as a on (a.id = p."authorId")
-                    WHERE p."publicationDoi"=:doi""")
 
-        params = {'doi': doi, }
-        a = a.bindparams(bindparam('doi'))
-        authors = session.execute(a, params).fetchall()
+        result = None
+        if pub:
+            a = text("""SELECT name FROM "PublicationAuthor" as p
+                        JOIN "Author" as a on (a.id = p."authorId")
+                        WHERE p."publicationDoi"=:doi""")
 
-        f = text("""SELECT name FROM "PublicationFieldOfStudy" as p
-                    JOIN "FieldOfStudy" as a on (a.id = p."fieldOfStudyId")
-                    WHERE p."publicationDoi"=:doi""")
-        f = f.bindparams(bindparam('doi'))
-        fos = session.execute(f, params).fetchall()
+            params = {'doi': doi, }
+            a = a.bindparams(bindparam('doi'))
+            authors = session.execute(a, params).fetchall()
 
-        result = {
-            'publication': pub,
-            'authors': authors,
-            'fieldsOfStudy': fos
-        }
+            f = text("""SELECT name FROM "PublicationFieldOfStudy" as p
+                        JOIN "FieldOfStudy" as a on (a.id = p."fieldOfStudyId")
+                        WHERE p."publicationDoi"=:doi""")
+            f = f.bindparams(bindparam('doi'))
+            fos = session.execute(f, params).fetchall()
+
+            result = pub
+            result['authors']: authors
+            result['fieldsOfStudy']: fos
+
         session.close()
         return result
 
@@ -104,17 +108,15 @@ class DAO(object):
                                   abstract=publication_data['abstract'])
         publication = self.save_if_not_exist(session, publication, Publication, {'doi': publication.doi})
 
-        logging.warning('publication.doi')
-        logging.warning(publication.doi)
-        logging.warning(publication.id)
+        logging.debug('publication.doi')
+        logging.debug(publication.doi)
+        # logging.warning(publication.id)
 
         authors = publication_data['authors']
         for author_data in authors:
             author = Author(name=author_data['name'], normalizedName=author_data['normalizedName'])
 
             author = self.save_if_not_exist(session, author, Author, {'normalizedName': author.normalizedName})
-            logging.warning('author.id')
-            logging.warning(author.id)
             if author.id:
                 publication_authors = PublicationAuthor(**{'authorId': author.id, 'publicationDoi': publication.doi})
                 self.save_if_not_exist(session, publication_authors, PublicationAuthor, {'authorId': author.id, 'publicationDoi': publication.doi})
@@ -123,8 +125,6 @@ class DAO(object):
         for sources_data in sources:
             source = Source(title=sources_data['title'], url=sources_data['url']) # todo no doi url ?
             source = self.save_if_not_exist(session, source, Source, {'title': source.title})
-            logging.warning('source.id')
-            logging.warning(source.id)
             if source.id:
                 publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
                 self.save_if_not_exist(session, publication_sources, PublicationSource, {'sourceId': source.id, 'publicationDoi': publication.doi})
@@ -135,8 +135,6 @@ class DAO(object):
                 fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'])
                 fos.level = 2
                 fos = self.save_if_not_exist(session, fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
-                logging.warning('fos.id')
-                logging.warning(fos.id)
                 if fos.id:
                     publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
                     self.save_if_not_exist(session, publication_fos, PublicationFieldOfStudy, {'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
