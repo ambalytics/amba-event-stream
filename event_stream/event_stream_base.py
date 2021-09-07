@@ -144,8 +144,5 @@ class EventStreamBase(object):
 
     @staticmethod
     def setup_logging():
-        logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.INFO, datefmt="%H:%M:%S")
+        logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.WARNING, datefmt="%H:%M:%S")
 
-
-if __name__ == '__main__':
-    EventStreamBase.start()
