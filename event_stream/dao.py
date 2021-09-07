@@ -73,11 +73,11 @@ class DAO(object):
 
         result = None
         if pub:
+            params = {'doi': doi, }
+
             a = text("""SELECT name FROM "PublicationAuthor" as p
                         JOIN "Author" as a on (a.id = p."authorId")
                         WHERE p."publicationDoi"=:doi""")
-
-            params = {'doi': doi, }
             a = a.bindparams(bindparam('doi'))
             authors = session.execute(a, params).fetchall()
 
@@ -87,9 +87,16 @@ class DAO(object):
             f = f.bindparams(bindparam('doi'))
             fos = session.execute(f, params).fetchall()
 
+            s = text("""SELECT name FROM "PublicationSource" as p
+                        JOIN "Source" as a on (a.id = p."fieldOfStudyId")
+                        WHERE p."publicationDoi"=:doi""")
+            s = s.bindparams(bindparam('doi'))
+            sources = session.execute(s, params).fetchall()
+
             result = pub
             result['authors']: authors
             result['fieldsOfStudy']: fos
+            result['source_id']: sources
 
         session.close()
         return result
@@ -121,13 +128,14 @@ class DAO(object):
                 publication_authors = PublicationAuthor(**{'authorId': author.id, 'publicationDoi': publication.doi})
                 self.save_if_not_exist(session, publication_authors, PublicationAuthor, {'authorId': author.id, 'publicationDoi': publication.doi})
 
-        sources = publication_data['source_id']
-        for sources_data in sources:
-            source = Source(title=sources_data['title'], url=sources_data['url']) # todo no doi url ?
-            source = self.save_if_not_exist(session, source, Source, {'title': source.title})
-            if source.id:
-                publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
-                self.save_if_not_exist(session, publication_sources, PublicationSource, {'sourceId': source.id, 'publicationDoi': publication.doi})
+        if 'source_id' in publication_data:
+            sources = publication_data['source_id']
+            for sources_data in sources:
+                source = Source(title=sources_data['title'], url=sources_data['url']) # todo no doi url ?
+                source = self.save_if_not_exist(session, source, Source, {'title': source.title})
+                if source.id:
+                    publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
+                    self.save_if_not_exist(session, publication_sources, PublicationSource, {'sourceId': source.id, 'publicationDoi': publication.doi})
 
         if 'fieldsOfStudy' in publication_data:
             fields_of_study = publication_data['fieldsOfStudy']
