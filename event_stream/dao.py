@@ -100,7 +100,7 @@ class DAO(object):
             resultproxy = session.execute(s, params)
             sources = [dict(row) for row in resultproxy]
 
-            result = pub
+            result = pub[0]
             result['authors']: authors
             result['fieldsOfStudy']: fos
             result['source_id']: sources
