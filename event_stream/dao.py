@@ -93,7 +93,7 @@ class DAO(object):
             s = s.bindparams(bindparam('doi'))
             sources = session.execute(s, params).fetchall()
 
-            result = pub
+            result = DAO.object_as_dict(pub)
             result['authors']: authors
             result['fieldsOfStudy']: fos
             result['source_id']: sources
