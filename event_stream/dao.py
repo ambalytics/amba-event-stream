@@ -75,6 +75,7 @@ class DAO(object):
         p = p.bindparams(bindparam('doi'))
         pub = session.execute(p, params).fetchall()
 
+        row2dict = lambda r: {c.name: str(getattr(r, c.name)) for c in r.__table__.columns}
         result = None
         if pub:
 
@@ -82,7 +83,14 @@ class DAO(object):
                         JOIN "Author" as a on (a.id = p."authorId")
                         WHERE p."publicationDoi"=:doi""")
             a = a.bindparams(bindparam('doi'))
-            authors = session.execute(a, params).fetchall()
+            resultproxy = session.execute(a, params).fetchall()
+            d, authors = {}, []
+            for rowproxy in resultproxy:
+                # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
+                for column, value in rowproxy.items():
+                    # build up the dictionary
+                    d = {**d, **{column: value}}
+                authors.append(d)
 
             f = text("""SELECT name FROM "PublicationFieldOfStudy" as p
                         JOIN "FieldOfStudy" as a on (a.id = p."fieldOfStudyId")
@@ -96,7 +104,7 @@ class DAO(object):
             s = s.bindparams(bindparam('doi'))
             sources = session.execute(s, params).fetchall()
 
-            result = pub
+            result = row2dict(pub)
             result['authors']: authors
             result['fieldsOfStudy']: fos
             result['source_id']: sources
