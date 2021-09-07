@@ -73,38 +73,34 @@ class DAO(object):
         # pub = session.query(Publication).filter_by(doi=doi).all()
         p = text("""SELECT * FROM "Publication" WHERE doi=:doi""")
         p = p.bindparams(bindparam('doi'))
-        pub = session.execute(p, params).fetchall()
-
-        row2dict = lambda r: {c.name: str(getattr(r, c.name)) for c in r.__table__.columns}
+        resultproxy = session.execute(p, params)
+        pub = [{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
         result = None
+
         if pub:
 
             a = text("""SELECT name FROM "PublicationAuthor" as p
                         JOIN "Author" as a on (a.id = p."authorId")
                         WHERE p."publicationDoi"=:doi""")
             a = a.bindparams(bindparam('doi'))
-            resultproxy = session.execute(a, params).fetchall()
-            d, authors = {}, []
-            for rowproxy in resultproxy:
-                # rowproxy.items() returns an array like [(key0, value0), (key1, value1)]
-                for column, value in rowproxy.items():
-                    # build up the dictionary
-                    d = {**d, **{column: value}}
-                authors.append(d)
+            resultproxy = session.execute(a, params)
+            authors = [{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
 
             f = text("""SELECT name FROM "PublicationFieldOfStudy" as p
                         JOIN "FieldOfStudy" as a on (a.id = p."fieldOfStudyId")
                         WHERE p."publicationDoi"=:doi""")
             f = f.bindparams(bindparam('doi'))
-            fos = session.execute(f, params).fetchall()
+            resultproxy = session.execute(f, params)
+            fos = [{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
 
             s = text("""SELECT title, url FROM "PublicationSource" as p
                         JOIN "Source" as a on (a.id = p."sourceId")
                         WHERE p."publicationDoi"=:doi""")
             s = s.bindparams(bindparam('doi'))
-            sources = session.execute(s, params).fetchall()
+            resultproxy = session.execute(s, params)
+            sources = [{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
 
-            result = row2dict(pub)
+            result = pub
             result['authors']: authors
             result['fieldsOfStudy']: fos
             result['source_id']: sources
