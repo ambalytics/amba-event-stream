@@ -87,8 +87,8 @@ class DAO(object):
             f = f.bindparams(bindparam('doi'))
             fos = session.execute(f, params).fetchall()
 
-            s = text("""SELECT name FROM "PublicationSource" as p
-                        JOIN "Source" as a on (a.id = p."fieldOfStudyId")
+            s = text("""SELECT title, url FROM "PublicationSource" as p
+                        JOIN "Source" as a on (a.id = p."sourceId")
                         WHERE p."publicationDoi"=:doi""")
             s = s.bindparams(bindparam('doi'))
             sources = session.execute(s, params).fetchall()
