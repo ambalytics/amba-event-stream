@@ -74,7 +74,7 @@ class DAO(object):
         p = text("""SELECT * FROM "Publication" WHERE doi=:doi""")
         p = p.bindparams(bindparam('doi'))
         resultproxy = session.execute(p, params)
-        pub = [{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
+        pub = [dict(row) for row in resultproxy]
         result = None
 
         if pub:
@@ -84,21 +84,21 @@ class DAO(object):
                         WHERE p."publicationDoi"=:doi""")
             a = a.bindparams(bindparam('doi'))
             resultproxy = session.execute(a, params)
-            authors = [{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
+            authors = [dict(row) for row in resultproxy]
 
             f = text("""SELECT name FROM "PublicationFieldOfStudy" as p
                         JOIN "FieldOfStudy" as a on (a.id = p."fieldOfStudyId")
                         WHERE p."publicationDoi"=:doi""")
             f = f.bindparams(bindparam('doi'))
             resultproxy = session.execute(f, params)
-            fos = [{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
+            fos = [dict(row) for row in resultproxy]
 
             s = text("""SELECT title, url FROM "PublicationSource" as p
                         JOIN "Source" as a on (a.id = p."sourceId")
                         WHERE p."publicationDoi"=:doi""")
             s = s.bindparams(bindparam('doi'))
             resultproxy = session.execute(s, params)
-            sources = [{column: value for column, value in rowproxy.items()} for rowproxy in resultproxy]
+            sources = [dict(row) for row in resultproxy]
 
             result = pub
             result['authors']: authors
