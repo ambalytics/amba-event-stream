@@ -147,6 +147,73 @@ class DiscussionWordData(Base):
     count = sa.Column(sa.Integer())
 
 
+class DiscussionLocation(Base):
+
+    __tablename__ = 'discussion_location'
+
+    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
+    location = sa.Column(sa.String())
+
+
+class DiscussionLocationData(Base):
+
+    __tablename__ = 'discussion_location_data'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    discussion_location_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_location.id'), nullable=False)
+    count = sa.Column(sa.Integer())
+
+
+class DiscussionAuthor(Base):
+
+    __tablename__ = 'discussion_author'
+
+    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
+    author = sa.Column(sa.String())
+
+
+class DiscussionAuthorData(Base):
+
+    __tablename__ = 'discussion_author_data'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    discussion_author_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_author.id'), nullable=False)
+    count = sa.Column(sa.Integer())
+
+
+class DiscussionLang(Base):
+
+    __tablename__ = 'discussion_lang'
+
+    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
+    lang = sa.Column(sa.String())
+
+
+class DiscussionLangData(Base):
+
+    __tablename__ = 'discussion_lang_data'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    discussion_lang_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_lang.id'), nullable=False)
+    count = sa.Column(sa.Integer())
+
+
+class DiscussionType(Base):
+
+    __tablename__ = 'discussion_type'
+
+    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
+    type = sa.Column(sa.String())
+
+
+class DiscussionTypeData(Base):
+
+    __tablename__ = 'discussion_type_data'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    discussion_type_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_type.id'), nullable=False)
+    count = sa.Column(sa.Integer())
+
 class Trending(Base):
     __tablename__ = 'trending'
 
