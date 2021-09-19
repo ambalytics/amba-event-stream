@@ -118,7 +118,7 @@ class DAO(object):
                                   publisher=publication_data['publisher'],
                                   citation_count=publication_data['citation_count'],
                                   title=publication_data['title'],
-                                  normalized_title=publication_data['normalizedTitle'],
+                                  normalized_title=publication_data['normalized_title'],
                                   abstract=publication_data['abstract'])
         publication = self.save_if_not_exist(session, publication, Publication, {'doi': publication.doi})
 
@@ -128,9 +128,9 @@ class DAO(object):
 
         authors = publication_data['authors']
         for author_data in authors:
-            author = Author(name=author_data['name'], normalizedName=author_data['normalizedName'])
+            author = Author(name=author_data['name'], normalized_name=author_data['normalized_name'])
 
-            author = self.save_if_not_exist(session, author, Author, {'normalizedName': author.normalizedName})
+            author = self.save_if_not_exist(session, author, Author, {'normalized_name': author.normalized_name})
             if author.id:
                 publication_authors = PublicationAuthor(**{'authorId': author.id, 'publication_doi': publication.doi})
                 self.save_if_not_exist(session, publication_authors, PublicationAuthor, {'authorId': author.id, 'publication_doi': publication.doi})
@@ -149,8 +149,8 @@ class DAO(object):
             for fos_data in fields_of_study:
                 if 'level' not in fos_data:
                     fos_data['level'] = 2
-                fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'], level=fos_data['level'])
-                fos = self.save_if_not_exist(session, fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
+                fos = FieldOfStudy(name=fos_data['name'], normalized_name=fos_data['normalized_name'], level=fos_data['level'])
+                fos = self.save_if_not_exist(session, fos, FieldOfStudy, {'normalized_name': fos.normalized_name})
 
                 # check if we need an overwrite
                 if fos_data['level'] < 2 and fos.level == 2:
