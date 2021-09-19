@@ -147,9 +147,16 @@ class DAO(object):
         if 'fieldsOfStudy' in publication_data:
             fields_of_study = publication_data['fieldsOfStudy']
             for fos_data in fields_of_study:
-                fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'])
-                fos.level = 2
+                if 'level' not in fos_data:
+                    fos_data['level'] = 2
+                fos = FieldOfStudy(name=fos_data['name'], normalizedName=fos_data['normalizedName'], level=fos_data['level'])
                 fos = self.save_if_not_exist(session, fos, FieldOfStudy, {'normalizedName': fos.normalizedName})
+
+                # check if we need an overwrite
+                if fos_data['level'] < 2 and fos.level == 2:
+                    fos.level = fos_data['level']
+                    DAO.save_object(session, fos)
+
                 if fos.id:
                     publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
                     self.save_if_not_exist(session, publication_fos, PublicationFieldOfStudy, {'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
@@ -170,38 +177,7 @@ class DAO(object):
         session_factory = sessionmaker(bind=self.engine)
         Session = scoped_session(session_factory)
         session = Session()
-        event_data['sourceId'] = 'twitter'  # todo
-        if 'location' not in event_data['subj']['processed']:
-            event_data['subj']['processed']['location'] = 'unknown'
-        if 'contains_abstract' not in event_data['subj']['processed']:
-            event_data['subj']['processed']['contains_abstract'] = 0
-        if 'sentiment' not in event_data['subj']['processed']:
-            event_data['subj']['processed']['sentiment'] = 0
-        if 'name' not in event_data['subj']['processed']:
-            event_data['subj']['processed']['name'] = 'unknown'
-
-        discussion_data = DiscussionData(
-            publicationDoi=event_data['obj']['data']['doi'],
-            createdAt=event_data['timestamp'],
-            score=event_data['subj']['processed']['score'],
-            timeScore=event_data['subj']['processed']['time_score'],
-            typeScore=event_data['subj']['processed']['type_score'],
-            userScore=event_data['subj']['processed']['user_score'],
-            language=event_data['subj']['data']['lang'],
-            source=event_data['subj']['data']['source'],
-            abstractDifference=event_data['subj']['processed']['contains_abstract'],
-            length=event_data['subj']['processed']['length'],
-            questions=event_data['subj']['processed']['question_mark_count'],
-            exclamations=event_data['subj']['processed']['exclamation_mark_count'],
-            type=event_data['subj']['processed']['tweet_type'],
-            sentiment=event_data['subj']['processed']['sentiment'],
-            subjId=event_data['subj']['alternative-id'],
-            followers=event_data['subj']['processed']['followers'],
-            botScore=event_data['subj']['processed']['bot_rating'],
-            authorName=event_data['subj']['processed']['name'],  # make this a table?
-            authorLocation=event_data['subj']['processed']['location'],
-            sourceId=event_data['sourceId'])
-        self.save_object(session, discussion_data)
+        publication_doi = event_data['obj']['data']['doi']
 
         if 'context_annotations' in event_data['subj']['data']:
             context_entity = event_data['subj']['data']['context_annotations']
@@ -210,9 +186,9 @@ class DAO(object):
                 entity = self.save_if_not_exist(session, entity, DiscussionEntity, {'entity': entity.entity})
 
                 publication_entity = DiscussionEntityData(
-                    **{'discussionDataId': discussion_data.id, 'discussionEntityId': entity.id})
+                    **{'publication_doi': publication_doi, 'discussion_entity_id': entity.id})
                 self.save_if_not_exist(session, publication_entity, DiscussionEntityData,
-                                       {'discussionDataId': discussion_data.id, 'discussionEntityId': entity.id})
+                                       {'publication_doi': publication_doi, 'discussion_entity_id': entity.id})
 
         if 'words' in event_data['subj']['processed']:
             words = event_data['subj']['processed']['words']
@@ -221,10 +197,10 @@ class DAO(object):
                 word = self.save_if_not_exist(session, word, DiscussionWord, {'word': word.word})
 
                 publication_words = DiscussionWordData(
-                    **{'discussionDataId': discussion_data.id, 'discussionWordId': word.id, 'count': words_data[1]})
+                    **{'publication_doi': publication_doi, 'discussion_word_id': word.id, 'count': words_data[1]})
                 self.save_object(session, publication_words)
                 self.save_if_not_exist(session, publication_words, DiscussionWordData,
-                                       {'discussionDataId': discussion_data.id, 'discussionWordId': word.id})
+                                       {'publication_doi': publication_doi, 'discussion_word_id': word.id})
 
         if 'entities' in event_data['subj']['data'] and 'hashtags' in event_data['subj']['data']['entities']:
             hashtags = event_data['subj']['data']['entities']['hashtags']
@@ -233,10 +209,10 @@ class DAO(object):
                 hashtag = self.save_if_not_exist(session, hashtag, DiscussionHashtag, {'hashtag': hashtag.hashtag})
 
                 publication_h = DiscussionHashtagData(
-                    **{'discussionDataId': discussion_data.id, 'discussionHashtagId': hashtag.id})
+                    **{'publication_doi': publication_doi, 'discussion_hashtag_id': hashtag.id})
                 self.save_object(session, publication_h)
                 self.save_if_not_exist(session, publication_h, DiscussionHashtagData,
-                                       {'discussionDataId': discussion_data.id, 'discussionHashtagId': hashtag.id})
+                                       {'publication_doi': publication_doi, 'discussion_hashtag_id': hashtag.id})
 
         session.close()
-        return discussion_data
+        return True

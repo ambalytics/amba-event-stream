@@ -20,22 +20,36 @@ class PublicationType(str, Enum):
 
 
 class Publication(Base):
-    __tablename__ = 'Publication'
+    __tablename__ = 'publication'
 
     id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
     doi = sa.Column(sa.String(), nullable=False, unique=True)
     type = sa.Column(sa.Enum(PublicationType))
-    pubDate = sa.Column(sa.String())
+    pub_date = sa.Column(sa.String())
     year = sa.Column(sa.Integer())
     publisher = sa.Column(sa.String())
-    citationCount = sa.Column(sa.Integer())
+    citation_count = sa.Column(sa.Integer())
     title = sa.Column(sa.String())
-    normalizedTitle = sa.Column(sa.String())
+    normalized_title = sa.Column(sa.String())
     abstract = sa.Column(sa.Text())
 
 
+class PublicationCitation(Base):
+    __tablename__ = 'publication_citation'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    citation_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), nullable=False)
+
+
+class PublicationReference(Base):
+    __tablename__ = 'publication_reference'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    reference_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), nullable=False)
+
+
 class Source(Base):
-    __tablename__ = 'Source'
+    __tablename__ = 'source'
 
     id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
     title = sa.Column(sa.String())
@@ -43,155 +57,117 @@ class Source(Base):
     license = sa.Column(sa.String())
 
 
-class FieldOfStudy(Base):
-    __tablename__ = 'FieldOfStudy'
+class PublicationSource(Base):
+    __tablename__ = 'publication_source'
 
-    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
-    name = sa.Column(sa.String())
-    normalizedName = sa.Column(sa.String())
-    level = sa.Column(sa.Integer())
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    source_id = sa.Column(sa.BigInteger(), sa.ForeignKey('source.id'), nullable=False)
 
 
 class Author(Base):
-    __tablename__ = 'Author'
+    __tablename__ = 'author'
 
     id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
     name = sa.Column(sa.String())
-    normalizedName = sa.Column(sa.String())
-
-
-class PublicationCitation(Base):
-    __tablename__ = 'PublicationCitation'
-
-    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), nullable=False, primary_key=True)
-    citationId = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), nullable=False, primary_key=True)
-
-
-class PublicationReference(Base):
-    __tablename__ = 'PublicationReference'
-
-    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), nullable=False, primary_key=True)
-    referenceId = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), nullable=False, primary_key=True)
-
-
-class PublicationFieldOfStudy(Base):
-    __tablename__ = 'PublicationFieldOfStudy'
-
-    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), nullable=False, primary_key=True)
-    fieldOfStudyId = sa.Column(sa.BigInteger(), sa.ForeignKey('FieldOfStudy.id'), nullable=False, primary_key=True)
+    normalized_name = sa.Column(sa.String())
 
 
 class PublicationAuthor(Base):
-    __tablename__ = 'PublicationAuthor'
+    __tablename__ = 'publication_author'
 
-    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), nullable=False, primary_key=True)
-    authorId = sa.Column(sa.BigInteger(), sa.ForeignKey('Author.id'), nullable=False, primary_key=True)
-
-
-class PublicationSource(Base):
-    __tablename__ = 'PublicationSource'
-
-    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'), nullable=False, primary_key=True)
-    sourceId = sa.Column(sa.BigInteger(), sa.ForeignKey('Source.id'), nullable=False, primary_key=True)
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    author_id = sa.Column(sa.BigInteger(), sa.ForeignKey('author.id'), nullable=False)
 
 
-class DiscussionData(Base):
-    __tablename__ = 'DiscussionData'
+class FieldOfStudy(Base):
+    __tablename__ = 'field_of_study'
 
     id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
-    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'))
-    createdAt = sa.Column(sa.TIMESTAMP())
-    score = sa.Column(sa.Float())
-    timeScore = sa.Column(sa.Float())
-    typeScore = sa.Column(sa.Float())
-    userScore = sa.Column(sa.Float())
-    language = sa.Column(sa.String())
-    source = sa.Column(sa.String())
-    abstractDifference = sa.Column(sa.Float())
-    length = sa.Column(sa.Integer())
-    questions = sa.Column(sa.Integer())
-    exclamations = sa.Column(sa.Integer())
-    type = sa.Column(sa.String())
-    sentiment = sa.Column(sa.Float())
-    subjId = sa.Column(sa.BigInteger())
-    followers = sa.Column(sa.Integer())
-    botScore = sa.Column(sa.Float())
-    authorName = sa.Column(sa.String())
-    authorLocation = sa.Column(sa.String())
-    sourceId = sa.Column(sa.String())
+    name = sa.Column(sa.String())
+    normalized_name = sa.Column(sa.String())
+    level = sa.Column(sa.Integer())
+
+
+class PublicationFieldOfStudy(Base):
+    __tablename__ = 'publication_field_of_study'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    field_of_study_id = sa.Column(sa.BigInteger(), sa.ForeignKey('field_of_study.id'), nullable=False)
+
+
+class FieldOfStudyChildren(Base):
+    __tablename__ = 'field_of_study_children'
+
+    field_of_study_id = sa.Column(sa.BigInteger(), sa.ForeignKey('field_of_study.id'), primary_key=True)
+    child_field_of_study_id = sa.Column(sa.BigInteger(), sa.ForeignKey('field_of_study.id'), nullable=False)
 
 
 class DiscussionEntity(Base):
-    __tablename__ = 'DiscussionEntity'
+    __tablename__ = 'discussion_entity'
 
     id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
     entity = sa.Column(sa.String())
 
 
+class DiscussionEntityData(Base):
+    __tablename__ = 'discussion_entity_data'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    discussion_entity_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_entity.id'), nullable=False)
+    count = sa.Column(sa.Integer())
+
+
 class DiscussionHashtag(Base):
-    __tablename__ = 'DiscussionHashtag'
+    __tablename__ = 'discussion_hashtag'
 
     id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
     hashtag = sa.Column(sa.String())
 
 
+class DiscussionHashtagData(Base):
+    __tablename__ = 'discussion_hashtag_data'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    discussion_hashtag_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_hashtag.id'), nullable=False)
+    count = sa.Column(sa.Integer())
+
+
 class DiscussionWord(Base):
-    __tablename__ = 'DiscussionWord'
+    __tablename__ = 'discussion_word'
 
     id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
     word = sa.Column(sa.String())
 
 
-class DiscussionAuthor(Base):
-    __tablename__ = 'DiscussionAuthor'
-
-    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
-    name = sa.Column(sa.String())
-
-
-class DiscussionEntityData(Base):
-    __tablename__ = 'DiscussionEntityData'
-
-    discussionDataId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionData.id'), nullable=False, primary_key=True)
-    discussionEntityId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionEntity.id'), nullable=False,
-                                   primary_key=True)
-
-
-class DiscussionAuthorData(Base):
-    __tablename__ = 'DiscussionAuthorData'
-
-    discussionDataId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionData.id'), nullable=False, primary_key=True)
-    discussionAuthorId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionAuthor.id'), nullable=False,
-                                   primary_key=True)
-
-
 class DiscussionWordData(Base):
-    __tablename__ = 'DiscussionWordData'
+    __tablename__ = 'discussion_word_data'
 
-    discussionDataId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionData.id'), nullable=False, primary_key=True)
-    discussionWordId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionWord.id'), nullable=False, primary_key=True)
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), primary_key=True)
+    discussion_word_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_word.id'), nullable=False)
     count = sa.Column(sa.Integer())
 
 
-class DiscussionHashtagData(Base):
-    __tablename__ = 'DiscussionHashtagData'
-
-    discussionDataId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionData.id'), nullable=False, primary_key=True)
-    discussionHashtagId = sa.Column(sa.BigInteger(), sa.ForeignKey('DiscussionHashtag.id'), nullable=False,
-                                    primary_key=True)
-
-
-class AggregatedData(Base):
-    __tablename__ = 'AggregatedData'
+class Trending(Base):
+    __tablename__ = 'trending'
 
     id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
-    publicationDoi = sa.Column(sa.String(), sa.ForeignKey('Publication.doi'))
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'))
+    duration = sa.Column(sa.Integer())
     score = sa.Column(sa.Float())
+    count = sa.Column(sa.Integer())
+    median_sentiment = sa.Column(sa.Float())
+    sum_follower = sa.Column(sa.Integer())
+    abstract_difference = sa.Column(sa.Float())
+    tweet_author_diversity = sa.Column(sa.Float())
+    hashtag_diversity = sa.Column(sa.Float())
+    words_diversity = sa.Column(sa.Float())
+    lan_diversity = sa.Column(sa.Float())
+    location_diversity = sa.Column(sa.Float())
+    median_age = sa.Column(sa.Float())
+    median_length = sa.Column(sa.Float())
+    avg_questions = sa.Column(sa.Float())
+    avg_exclamations = sa.Column(sa.Float())
+    bot_percentage = sa.Column(sa.Float())
+    projected_change = sa.Column(sa.Float())
+    is_trending = sa.Column(sa.Boolean())
 
-
-class DebugData(Base):
-    __tablename__ = 'DebugData'
-
-    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
-    info = sa.Column(sa.String())
-    data = sa.Column(JSON())
