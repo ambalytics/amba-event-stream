@@ -58,7 +58,7 @@ class DAO(object):
         obj_db = DAO.get_object(session, table, kwargs)
         if obj_db:
             # add count to existing object
-            obj_db['count'] += obj['count']
+            obj_db.count += obj['count']
             obj = obj_db
 
         DAO.save_object(session, obj)
