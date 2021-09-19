@@ -132,8 +132,8 @@ class DAO(object):
 
             author = self.save_if_not_exist(session, author, Author, {'normalized_name': author.normalized_name})
             if author.id:
-                publication_authors = PublicationAuthor(**{'authorId': author.id, 'publication_doi': publication.doi})
-                self.save_if_not_exist(session, publication_authors, PublicationAuthor, {'authorId': author.id, 'publication_doi': publication.doi})
+                publication_authors = PublicationAuthor(**{'author_id': author.id, 'publication_doi': publication.doi})
+                self.save_if_not_exist(session, publication_authors, PublicationAuthor, {'author_id': author.id, 'publication_doi': publication.doi})
 
         if 'source_id' in publication_data:
             sources = publication_data['source_id']
@@ -141,8 +141,8 @@ class DAO(object):
                 source = Source(title=sources_data['title'], url=sources_data['url']) # todo no doi url ?
                 source = self.save_if_not_exist(session, source, Source, {'title': source.title})
                 if source.id:
-                    publication_sources = PublicationSource(**{'sourceId': source.id, 'publication_doi': publication.doi})
-                    self.save_if_not_exist(session, publication_sources, PublicationSource, {'sourceId': source.id, 'publication_doi': publication.doi})
+                    publication_sources = PublicationSource(**{'source_id': source.id, 'publication_doi': publication.doi})
+                    self.save_if_not_exist(session, publication_sources, PublicationSource, {'source_id': source.id, 'publication_doi': publication.doi})
 
         if 'fields_of_study' in publication_data:
             fields_of_study = publication_data['fields_of_study']
@@ -158,8 +158,8 @@ class DAO(object):
                     DAO.save_object(session, fos)
 
                 if fos.id:
-                    publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publication_doi': publication.doi})
-                    self.save_if_not_exist(session, publication_fos, PublicationFieldOfStudy, {'fieldOfStudyId': fos.id, 'publication_doi': publication.doi})
+                    publication_fos = PublicationFieldOfStudy(**{'field_of_study_id': fos.id, 'publication_doi': publication.doi})
+                    self.save_if_not_exist(session, publication_fos, PublicationFieldOfStudy, {'field_of_study_id': fos.id, 'publication_doi': publication.doi})
 
         session.close()
         return publication
