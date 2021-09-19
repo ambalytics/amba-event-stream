@@ -71,7 +71,7 @@ class DAO(object):
 
         session = Session()
         # pub = session.query(Publication).filter_by(doi=doi).all()
-        p = text("""SELECT * FROM "Publication" WHERE doi=:doi""")
+        p = text("""SELECT * FROM publication WHERE doi=:doi""")
         p = p.bindparams(bindparam('doi'))
         resultproxy = session.execute(p, params)
         pub = [dict(row) for row in resultproxy]
@@ -79,30 +79,30 @@ class DAO(object):
 
         if pub:
 
-            a = text("""SELECT name FROM "PublicationAuthor" as p
-                        JOIN "Author" as a on (a.id = p."authorId")
-                        WHERE p."publicationDoi"=:doi""")
+            a = text("""SELECT name FROM publication_author as p
+                        JOIN author as a on (a.id = p.author_id)
+                        WHERE p.publication_doi=:doi""")
             a = a.bindparams(bindparam('doi'))
             resultproxy = session.execute(a, params)
             authors = [dict(row) for row in resultproxy]
 
-            f = text("""SELECT name FROM "PublicationFieldOfStudy" as p
-                        JOIN "FieldOfStudy" as a on (a.id = p."fieldOfStudyId")
-                        WHERE p."publicationDoi"=:doi""")
+            f = text("""SELECT name FROM publication_field_of_study as p
+                        JOIN field_of_study as a on (a.id = p.field_of_study_id)
+                        WHERE p.publication_doi=:doi""")
             f = f.bindparams(bindparam('doi'))
             resultproxy = session.execute(f, params)
             fos = [dict(row) for row in resultproxy]
 
-            s = text("""SELECT title, url FROM "PublicationSource" as p
-                        JOIN "Source" as a on (a.id = p."sourceId")
-                        WHERE p."publicationDoi"=:doi""")
+            s = text("""SELECT title, url FROM publication_source as p
+                        JOIN source as a on (a.id = p.source_id)
+                        WHERE p.publication_doi=:doi""")
             s = s.bindparams(bindparam('doi'))
             resultproxy = session.execute(s, params)
             sources = [dict(row) for row in resultproxy]
 
             result = pub[0]
             result['authors']: authors
-            result['fieldsOfStudy']: fos
+            result['fields_of_study']: fos
             result['source_id']: sources
 
         session.close()
@@ -114,11 +114,11 @@ class DAO(object):
         session = Session()
 
         publication = Publication(doi=publication_data['doi'], type=publication_data['type'],
-                                  pubDate=publication_data['pubDate'], year=publication_data['year'],
+                                  pub_date=publication_data['pub_date'], year=publication_data['year'],
                                   publisher=publication_data['publisher'],
-                                  citationCount=publication_data['citationCount'],
+                                  citation_count=publication_data['citation_count'],
                                   title=publication_data['title'],
-                                  normalizedTitle=publication_data['normalizedTitle'],
+                                  normalized_title=publication_data['normalizedTitle'],
                                   abstract=publication_data['abstract'])
         publication = self.save_if_not_exist(session, publication, Publication, {'doi': publication.doi})
 
@@ -132,8 +132,8 @@ class DAO(object):
 
             author = self.save_if_not_exist(session, author, Author, {'normalizedName': author.normalizedName})
             if author.id:
-                publication_authors = PublicationAuthor(**{'authorId': author.id, 'publicationDoi': publication.doi})
-                self.save_if_not_exist(session, publication_authors, PublicationAuthor, {'authorId': author.id, 'publicationDoi': publication.doi})
+                publication_authors = PublicationAuthor(**{'authorId': author.id, 'publication_doi': publication.doi})
+                self.save_if_not_exist(session, publication_authors, PublicationAuthor, {'authorId': author.id, 'publication_doi': publication.doi})
 
         if 'source_id' in publication_data:
             sources = publication_data['source_id']
@@ -141,11 +141,11 @@ class DAO(object):
                 source = Source(title=sources_data['title'], url=sources_data['url']) # todo no doi url ?
                 source = self.save_if_not_exist(session, source, Source, {'title': source.title})
                 if source.id:
-                    publication_sources = PublicationSource(**{'sourceId': source.id, 'publicationDoi': publication.doi})
-                    self.save_if_not_exist(session, publication_sources, PublicationSource, {'sourceId': source.id, 'publicationDoi': publication.doi})
+                    publication_sources = PublicationSource(**{'sourceId': source.id, 'publication_doi': publication.doi})
+                    self.save_if_not_exist(session, publication_sources, PublicationSource, {'sourceId': source.id, 'publication_doi': publication.doi})
 
-        if 'fieldsOfStudy' in publication_data:
-            fields_of_study = publication_data['fieldsOfStudy']
+        if 'fields_of_study' in publication_data:
+            fields_of_study = publication_data['fields_of_study']
             for fos_data in fields_of_study:
                 if 'level' not in fos_data:
                     fos_data['level'] = 2
@@ -158,8 +158,8 @@ class DAO(object):
                     DAO.save_object(session, fos)
 
                 if fos.id:
-                    publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
-                    self.save_if_not_exist(session, publication_fos, PublicationFieldOfStudy, {'fieldOfStudyId': fos.id, 'publicationDoi': publication.doi})
+                    publication_fos = PublicationFieldOfStudy(**{'fieldOfStudyId': fos.id, 'publication_doi': publication.doi})
+                    self.save_if_not_exist(session, publication_fos, PublicationFieldOfStudy, {'fieldOfStudyId': fos.id, 'publication_doi': publication.doi})
 
         session.close()
         return publication
