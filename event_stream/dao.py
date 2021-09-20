@@ -39,7 +39,6 @@ class DAO(object):
             session.commit()
         except IntegrityError:
             logging.exception('save object')
-            print('IntegrityError')
             session.rollback()
 
     @staticmethod
@@ -59,11 +58,12 @@ class DAO(object):
         obj_db = DAO.get_object(session, table, kwargs)
         if obj_db:
             # add count to existing object
+            print('update')
             obj_db.count += obj.count
             session.commit()
             return obj_db
 
-        print('save_or_update_count')
+        print('save')
         DAO.save_object(session, obj)
         return obj
 
@@ -71,9 +71,10 @@ class DAO(object):
     def save_if_not_exist(session, obj, table, kwargs):
         obj_db = DAO.get_object(session, table, kwargs)
         if obj_db:
+            print('exists')
             return obj_db
 
-        print('save_if_not_exist')
+        print('not_exist')
         DAO.save_object(session, obj)
         return obj
 
@@ -205,9 +206,9 @@ class DAO(object):
                 entity = DiscussionEntity(entity=entity_data['entity']['name'])
                 entity = self.save_if_not_exist(session, entity, DiscussionEntity, {'entity': entity.entity})
 
-                publication_entity = DiscussionEntityData(
-                    **{'publication_doi': publication_doi, 'discussion_entity_id': entity.id, 'count': 1})
                 if entity.id:
+                    publication_entity = DiscussionEntityData(
+                        **{'publication_doi': publication_doi, 'discussion_entity_id': entity.id, 'count': 1})
                     self.save_or_update_count(session, publication_entity, DiscussionEntityData,
                                               {'publication_doi': publication_doi, 'discussion_entity_id': entity.id})
 
@@ -217,10 +218,9 @@ class DAO(object):
                 word = DiscussionWord(word=words_data[0])
                 word = self.save_if_not_exist(session, word, DiscussionWord, {'word': word.word})
 
-                publication_words = DiscussionWordData(
-                    **{'publication_doi': publication_doi, 'discussion_word_id': word.id, 'count': words_data[1]})
-                self.save_object(session, publication_words)
                 if word.id:
+                    publication_words = DiscussionWordData(
+                        **{'publication_doi': publication_doi, 'discussion_word_id': word.id, 'count': words_data[1]})
                     self.save_or_update_count(session, publication_words, DiscussionWordData,
                                               {'publication_doi': publication_doi, 'discussion_word_id': word.id})
 
@@ -230,16 +230,16 @@ class DAO(object):
                 hashtag = DiscussionHashtag(hashtag=h_data['tag'])
                 hashtag = self.save_if_not_exist(session, hashtag, DiscussionHashtag, {'hashtag': hashtag.hashtag})
 
-                publication_h = DiscussionHashtagData(
-                    **{'publication_doi': publication_doi, 'discussion_hashtag_id': hashtag.id, 'count': 1})
-                self.save_object(session, publication_h)
                 if hashtag.id:
+                    publication_h = DiscussionHashtagData(
+                        **{'publication_doi': publication_doi, 'discussion_hashtag_id': hashtag.id, 'count': 1})
                     self.save_or_update_count(session, publication_h, DiscussionHashtagData,
                                               {'publication_doi': publication_doi, 'discussion_hashtag_id': hashtag.id})
 
         if 'location' in event_data['subj']['processed']:
             location = DiscussionLocation(location=event_data['subj']['processed']['location'])
             location = self.save_if_not_exist(session, location, DiscussionLocation, {'location': location.location})
+
             if location.id:
                 publication_location = DiscussionLocationData(**{'discussion_location_id': location.id, 'count': 1,
                                                                  'publication_doi': publication_doi})
@@ -249,6 +249,7 @@ class DAO(object):
         if 'name' in event_data['subj']['processed']:
             author = DiscussionAuthor(author=event_data['subj']['processed']['name'])
             author = self.save_if_not_exist(session, author, DiscussionAuthor, {'author': author.author})
+
             if author.id:
                 publication_author = DiscussionAuthorData(**{'discussion_author_id': author.id, 'count': 1,
                                                              'publication_doi': publication_doi})
@@ -258,6 +259,7 @@ class DAO(object):
         if 'tweet_type' in event_data['subj']['processed']:
             type = DiscussionType(type=event_data['subj']['processed']['tweet_type'])
             type = self.save_if_not_exist(session, type, DiscussionType, {'type': type.type})
+
             if type.id:
                 publication_type = DiscussionTypeData(**{'discussion_type_id': type.id, 'count': 1,
                                                          'publication_doi': publication_doi})
@@ -267,6 +269,7 @@ class DAO(object):
         if 'lang' in event_data['subj']['data']:
             lang = DiscussionLang(lang=event_data['subj']['data']['lang'])
             lang = self.save_if_not_exist(session, lang, DiscussionLang, {'lang': lang.lang})
+
             if lang.id:
                 publication_lang = DiscussionLangData(**{'discussion_lang_id': lang.id, 'count': 1,
                                                          'publication_doi': publication_doi})
