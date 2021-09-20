@@ -58,12 +58,10 @@ class DAO(object):
         obj_db = DAO.get_object(session, table, kwargs)
         if obj_db:
             # add count to existing object
-            print('update')
             obj_db.count += obj.count
             session.commit()
             return obj_db
 
-        print('save')
         DAO.save_object(session, obj)
         return obj
 
@@ -71,10 +69,8 @@ class DAO(object):
     def save_if_not_exist(session, obj, table, kwargs):
         obj_db = DAO.get_object(session, table, kwargs)
         if obj_db:
-            print('exists')
             return obj_db
 
-        print('not_exist')
         DAO.save_object(session, obj)
         return obj
 
