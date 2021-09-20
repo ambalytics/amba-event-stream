@@ -38,6 +38,7 @@ class DAO(object):
             session.add(obj)
             session.commit()
         except IntegrityError:
+            logging.exception('save object')
             print('IntegrityError')
             session.rollback()
 
@@ -62,6 +63,7 @@ class DAO(object):
             session.commit()
             return obj_db
 
+        print('save_or_update_count')
         DAO.save_object(session, obj)
         return obj
 
@@ -71,6 +73,7 @@ class DAO(object):
         if obj_db:
             return obj_db
 
+        print('save_if_not_exist')
         DAO.save_object(session, obj)
         return obj
 
@@ -170,7 +173,7 @@ class DAO(object):
                 # check if we need an overwrite
                 if fos_data['level'] < 2 and fos.level == 2:
                     fos.level = fos_data['level']
-                    DAO.save_object(session, fos)
+                    session.commit()
 
                 if fos.id:
                     publication_fos = PublicationFieldOfStudy(
