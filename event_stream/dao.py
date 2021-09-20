@@ -59,7 +59,8 @@ class DAO(object):
         if obj_db:
             # add count to existing object
             obj_db.count += obj.count
-            obj = obj_db
+            session.commit()
+            return obj_db
 
         DAO.save_object(session, obj)
         return obj
