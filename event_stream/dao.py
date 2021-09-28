@@ -276,5 +276,15 @@ class DAO(object):
                 self.save_or_update_count(session, publication_lang, DiscussionLangData,
                                           {'publication_doi': publication_doi, 'discussion_lang_id': lang.id})
 
+        if 'source' in event_data['subj']['data']:
+            source = DiscussionSource(source=event_data['subj']['data']['source'])
+            source = self.save_if_not_exist(session, source, DiscussionSource, {'source': source.source})
+
+            if source.id:
+                publication_source = DiscussionSourceData(**{'discussion_source_id': source.id, 'count': 1,
+                                                             'publication_doi': publication_doi})
+                self.save_or_update_count(session, publication_source, DiscussionSourceData,
+                                          {'publication_doi': publication_doi, 'discussion_source_id': source.id})
+
         session.close()
         return True
