@@ -161,8 +161,12 @@ class DAO(object):
         if 'fields_of_study' in publication_data:
             fields_of_study = publication_data['fields_of_study']
             for fos_data in fields_of_study:
+                # todo add parents to be added to publication
+                # todo save children
+
                 if 'level' not in fos_data:
                     fos_data['level'] = 2
+
                 fos = FieldOfStudy(name=fos_data['name'], normalized_name=fos_data['normalized_name'],
                                    level=fos_data['level'])
                 fos = self.save_if_not_exist(session, fos, FieldOfStudy, {'normalized_name': fos.normalized_name})

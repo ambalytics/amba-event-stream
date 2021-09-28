@@ -214,6 +214,22 @@ class DiscussionTypeData(Base):
     discussion_type_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_type.id'), nullable=False, primary_key=True)
     count = sa.Column(sa.Integer())
 
+class DiscussionSource(Base):
+
+    __tablename__ = 'discussion_source'
+
+    id = sa.Column(sa.BigInteger(), autoincrement=True, primary_key=True)
+    source = sa.Column(sa.String())
+
+
+class DiscussionSourceData(Base):
+
+    __tablename__ = 'discussion_source_data'
+
+    publication_doi = sa.Column(sa.String(), sa.ForeignKey('publication.doi'), nullable=False, primary_key=True)
+    discussion_source_id = sa.Column(sa.BigInteger(), sa.ForeignKey('discussion_source.id'), nullable=False, primary_key=True)
+    count = sa.Column(sa.Integer())
+
 class Trending(Base):
     __tablename__ = 'trending'
 
