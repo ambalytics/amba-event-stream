@@ -13,10 +13,16 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 def save_newest_discussion_subj(session, e):
     max_count = 10
 
+    entities = []
+    if 'context_annotations' in e['subj']['data']:
+        context_entity = e['subj']['data']['context_annotations']
+        for entity_data in context_entity:
+            entities.append(entity_data['entity']['name'])
+
     obj = DiscussionNewestSubj(
         type='twitter',
         publication_doi=e['obj']['data']['doi'],
-        sub_id=e['subj']['pid'],
+        sub_id=e['subj_id'],
         created_at=datetime.datetime.now(),
         score=e['subj']['processed']['score'],
         bot_rating=e['subj']['processed']['bot_rating'],
@@ -30,7 +36,7 @@ def save_newest_discussion_subj(session, e):
         question_mark_count=e['subj']['processed']['question_mark_count'],
         exclamation_mark_count=e['subj']['processed']['exclamation_mark_count'],
         length=e['subj']['processed']['length'],
-        entities=json.dumps(e['subj']['data']['context_annotations'])
+        entities=json.dumps(entities)
     )
 
     table = DiscussionNewestSubj
@@ -326,7 +332,7 @@ class DAO(object):
         session.close()
         return True
 
-    def save_publication_not_found(self, doi):
+    def save_publication_not_found(self, doi, pub_is_done):
         session_factory = sessionmaker(bind=self.engine)
         Session = scoped_session(session_factory)
         session = Session()
@@ -334,6 +340,7 @@ class DAO(object):
         obj = PublicationNotFound(
             publication_doi=doi,
             last_try=datetime.datetime.now(),
+            pub_missing=pub_is_done,
         )
 
         table = PublicationNotFound

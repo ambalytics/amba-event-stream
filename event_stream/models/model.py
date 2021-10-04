@@ -100,6 +100,7 @@ class PublicationNotFound(Base):
 
     publication_doi = sa.Column(sa.String(), primary_key=True)
     last_try = sa.Column(sa.DateTime())
+    pub_missing = sa.Column(sa.String())
 
 
 class DiscussionData(Base):
