@@ -10,33 +10,31 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
-
-
 def save_newest_discussion_subj(session, e):
     max_count = 10
 
     obj = DiscussionNewestSubj(
         type='twitter',
-        publication_doi=e.data['obj']['data']['doi'],
-        sub_id=e.data['subj']['pid'],
+        publication_doi=e['obj']['data']['doi'],
+        sub_id=e['subj']['pid'],
         created_at=datetime.datetime.now(),
-        score=e.data['subj']['processed']['score'],
-        bot_rating=e.data['subj']['processed']['bot_rating'],
-        followers=e.data['subj']['processed']['followers'],
-        sentiment_raw=e.data['subj']['processed']['sentiment_raw'],
-        contains_abstract_raw=e.data['subj']['processed']['contains_abstract_raw'],
-        lang=e.data['subj']['data']['lang'],
-        location=e.data['subj']['processed']['location'],
-        source=e.data['subj']['data']['source'],
-        subj_type=e.data['subj']['processed']['tweet_type'],
-        question_mark_count=e.data['subj']['processed']['question_mark_count'],
-        exclamation_mark_count=e.data['subj']['processed']['exclamation_mark_count'],
-        length=e.data['subj']['processed']['length'],
+        score=e['subj']['processed']['score'],
+        bot_rating=e['subj']['processed']['bot_rating'],
+        followers=e['subj']['processed']['followers'],
+        sentiment_raw=e['subj']['processed']['sentiment_raw'],
+        contains_abstract_raw=e['subj']['processed']['contains_abstract_raw'],
+        lang=e['subj']['data']['lang'],
+        location=e['subj']['processed']['location'],
+        source=e['subj']['data']['source'],
+        subj_type=e['subj']['processed']['tweet_type'],
+        question_mark_count=e['subj']['processed']['question_mark_count'],
+        exclamation_mark_count=e['subj']['processed']['exclamation_mark_count'],
+        length=e['subj']['processed']['length'],
         entities=json.dumps(e['subj']['data']['context_annotations'])
     )
 
     table = DiscussionNewestSubj
-    key = {'publication_doi': e.data['obj']['data']['doi'], 'type': 'twitter'}
+    key = {'publication_doi': e['obj']['data']['doi'], 'type': 'twitter'}
     count = session.query(table).filter_by(**key).count()
     print(count)
 
@@ -327,3 +325,27 @@ class DAO(object):
 
         session.close()
         return True
+
+    def save_publication_not_found(self, doi):
+        session_factory = sessionmaker(bind=self.engine)
+        Session = scoped_session(session_factory)
+        session = Session()
+
+        obj = PublicationNotFound(
+            publication_doi=doi,
+            last_try=datetime.datetime.now(),
+        )
+
+        table = PublicationNotFound
+        kwargs = {'publication_doi': doi}
+        obj_db = DAO.get_object(session, table, kwargs)
+        if obj_db:
+            # add count to existing object
+            obj_db.last_try = datetime.datetime.now()
+            session.commit()
+            session.close()
+            return obj_db
+
+        DAO.save_object(session, obj)
+        session.close()
+        return obj
