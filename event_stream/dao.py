@@ -299,14 +299,14 @@ class DAO(object):
                                           {'publication_doi': publication_doi, 'discussion_data_point_id': location.id})
 
         if 'tweet_type' in event_data['subj']['processed']:
-            type = DiscussionData(value=event_data['subj']['processed']['tweet_type'], type='tweet_type')
-            type = self.save_if_not_exist(session, type, DiscussionData, {'value': type.value, 'type': 'type'})
+            dd_type = DiscussionData(value=event_data['subj']['processed']['tweet_type'], type='tweet_type')
+            dd_type = self.save_if_not_exist(session, dd_type, DiscussionData, {'value': dd_type.value, 'type': 'tweet_type'})
 
-            if type.id:
-                publication_type = DiscussionDataPoint(**{'discussion_data_point_id': type.id, 'count': 1,
+            if dd_type.id:
+                publication_type = DiscussionDataPoint(**{'discussion_data_point_id': dd_type.id, 'count': 1,
                                                           'publication_doi': publication_doi})
                 self.save_or_update_count(session, publication_type, DiscussionDataPoint,
-                                          {'publication_doi': publication_doi, 'discussion_data_point_id': type.id})
+                                          {'publication_doi': publication_doi, 'discussion_data_point_id': dd_type.id})
 
         if 'lang' in event_data['subj']['data']:
             lang = DiscussionData(value=event_data['subj']['data']['lang'], type='lang')
