@@ -42,13 +42,28 @@ def save_newest_discussion_subj(session, e):
     table = DiscussionNewestSubj
     key = {'publication_doi': e['obj']['data']['doi'], 'type': 'twitter'}
     count = session.query(table).filter_by(**key).count()
-    print(count)
 
     if count >= max_count:
         # update oldest
         oldest = session.query(table).filter_by(**key).order_by(DiscussionNewestSubj.created_at).first()
-        print(oldest)
-        oldest = obj
+        print(oldest.created_at)
+
+        oldest.sub_id = obj.sub_id
+        oldest.created_at = obj.created_at
+        oldest.score = obj.score
+        oldest.bot_rating = obj.bot_rating
+        oldest.followers = obj.followers
+        oldest.sentiment_raw = obj.sentiment_raw
+        oldest.contains_abstract_raw = obj.contains_abstract_raw
+        oldest.lang = obj.lang
+        oldest.location = obj.location
+        oldest.source = obj.source
+        oldest.subj_type = obj.subj_type
+        oldest.question_mark_count = obj.question_mark_count
+        oldest.exclamation_mark_count = obj.exclamation_mark_count
+        oldest.length = obj.length
+        oldest.entities = obj.entities
+
         session.commit()
         return True
 
