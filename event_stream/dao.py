@@ -1,11 +1,54 @@
+import datetime
+import json
 import logging
 
 from event_stream.models.model import *
-from sqlalchemy import Table, Column, MetaData, create_engine, inspect, text, bindparam
+from sqlalchemy import Table, Column, MetaData, create_engine, inspect, text, bindparam, desc
 import os
 import urllib
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker, scoped_session
+
+
+def save_newest_discussion_subj(session, e):
+    max_count = 10
+
+    obj = DiscussionNewestSubj(
+        type='twitter',
+        publication_doi=e.data['obj']['data']['doi'],
+        sub_id=e.data['subj']['pid'],
+        created_at=datetime.datetime.now(),
+        score=e.data['subj']['processed']['score'],
+        bot_rating=e.data['subj']['processed']['bot_rating'],
+        followers=e.data['subj']['processed']['followers'],
+        sentiment_raw=e.data['subj']['processed']['sentiment_raw'],
+        contains_abstract_raw=e.data['subj']['processed']['contains_abstract_raw'],
+        lang=e.data['subj']['data']['lang'],
+        location=e.data['subj']['processed']['location'],
+        source=e.data['subj']['data']['source'],
+        subj_type=e.data['subj']['processed']['tweet_type'],
+        question_mark_count=e.data['subj']['processed']['question_mark_count'],
+        exclamation_mark_count=e.data['subj']['processed']['exclamation_mark_count'],
+        length=e.data['subj']['processed']['length'],
+        entities=json.dumps(e['subj']['data']['context_annotations'])
+    )
+
+    table = DiscussionNewestSubj
+    key = {'publication_doi': e.data['obj']['data']['doi'], 'type': 'twitter'}
+    count = session.query(table).filter_by(**key).count()
+    print(count)
+
+    if count >= max_count:
+        # update oldest
+        oldest = session.query(table).filter_by(**key).order_by(DiscussionNewestSubj.created_at).first()
+        print(oldest)
+        oldest = obj
+        session.commit()
+        return True
+
+    else:
+        DAO.save_object(session, obj)
+        return True
 
 
 class DAO(object):
@@ -140,8 +183,8 @@ class DAO(object):
         authors = publication_data['authors']
         for author_data in authors:
             author = Author(name=author_data['name'], normalized_name=author_data['normalized_name'])
-
             author = self.save_if_not_exist(session, author, Author, {'normalized_name': author.normalized_name})
+
             if author.id:
                 publication_authors = PublicationAuthor(**{'author_id': author.id, 'publication_doi': publication.doi})
                 self.save_if_not_exist(session, publication_authors, PublicationAuthor,
@@ -152,6 +195,7 @@ class DAO(object):
             for sources_data in sources:
                 source = Source(title=sources_data['title'], url=sources_data['url'])  # todo no doi url ?
                 source = self.save_if_not_exist(session, source, Source, {'title': source.title})
+
                 if source.id:
                     publication_sources = PublicationSource(
                         **{'source_id': source.id, 'publication_doi': publication.doi})
@@ -161,20 +205,8 @@ class DAO(object):
         if 'fields_of_study' in publication_data:
             fields_of_study = publication_data['fields_of_study']
             for fos_data in fields_of_study:
-                # todo add parents to be added to publication
-                # todo save children
-
-                if 'level' not in fos_data:
-                    fos_data['level'] = 2
-
-                fos = FieldOfStudy(name=fos_data['name'], normalized_name=fos_data['normalized_name'],
-                                   level=fos_data['level'])
+                fos = FieldOfStudy(name=fos_data['name'], normalized_name=fos_data['normalized_name'])
                 fos = self.save_if_not_exist(session, fos, FieldOfStudy, {'normalized_name': fos.normalized_name})
-
-                # check if we need an overwrite
-                if fos_data['level'] < 2 and fos.level == 2:
-                    fos.level = fos_data['level']
-                    session.commit()
 
                 if fos.id:
                     publication_fos = PublicationFieldOfStudy(
@@ -203,88 +235,93 @@ class DAO(object):
         if 'context_annotations' in event_data['subj']['data']:
             context_entity = event_data['subj']['data']['context_annotations']
             for entity_data in context_entity:
-                entity = DiscussionEntity(entity=entity_data['entity']['name'])
-                entity = self.save_if_not_exist(session, entity, DiscussionEntity, {'entity': entity.entity})
+                entity = DiscussionData(value=entity_data['entity']['name'], type='entity')
+                entity = self.save_if_not_exist(session, entity, DiscussionData,
+                                                {'value': entity.entity, 'type': 'entity'})
 
                 if entity.id:
-                    publication_entity = DiscussionEntityData(
-                        **{'publication_doi': publication_doi, 'discussion_entity_id': entity.id, 'count': 1})
-                    self.save_or_update_count(session, publication_entity, DiscussionEntityData,
-                                              {'publication_doi': publication_doi, 'discussion_entity_id': entity.id})
+                    publication_entity = DiscussionDataPoint(
+                        **{'publication_doi': publication_doi, 'discussion_data_id': entity.id, 'count': 1})
+                    self.save_or_update_count(session, publication_entity, DiscussionDataPoint,
+                                              {'publication_doi': publication_doi, 'discussion_data_id': entity.id})
 
         if 'words' in event_data['subj']['processed']:
             words = event_data['subj']['processed']['words']
             for words_data in words:
-                word = DiscussionWord(word=words_data[0])
-                word = self.save_if_not_exist(session, word, DiscussionWord, {'word': word.word})
+                word = DiscussionData(value=words_data[0], type='word')
+                word = self.save_if_not_exist(session, word, DiscussionData, {'value': word.word, 'type': 'word'})
 
                 if word.id:
-                    publication_words = DiscussionWordData(
-                        **{'publication_doi': publication_doi, 'discussion_word_id': word.id, 'count': words_data[1]})
-                    self.save_or_update_count(session, publication_words, DiscussionWordData,
-                                              {'publication_doi': publication_doi, 'discussion_word_id': word.id})
+                    publication_words = DiscussionDataPoint(
+                        **{'publication_doi': publication_doi, 'discussion_data_id': word.id, 'count': words_data[1]})
+                    self.save_or_update_count(session, publication_words, DiscussionDataPoint,
+                                              {'publication_doi': publication_doi, 'discussion_data_id': word.id})
 
         if 'entities' in event_data['subj']['data'] and 'hashtags' in event_data['subj']['data']['entities']:
             hashtags = event_data['subj']['data']['entities']['hashtags']
             for h_data in hashtags:
-                hashtag = DiscussionHashtag(hashtag=h_data['tag'])
-                hashtag = self.save_if_not_exist(session, hashtag, DiscussionHashtag, {'hashtag': hashtag.hashtag})
+                hashtag = DiscussionData(value=h_data['tag'], type='hashtag')
+                hashtag = self.save_if_not_exist(session, hashtag, DiscussionData,
+                                                 {'value': hashtag.hashtag, 'type': 'hashtag'})
 
                 if hashtag.id:
-                    publication_h = DiscussionHashtagData(
-                        **{'publication_doi': publication_doi, 'discussion_hashtag_id': hashtag.id, 'count': 1})
-                    self.save_or_update_count(session, publication_h, DiscussionHashtagData,
-                                              {'publication_doi': publication_doi, 'discussion_hashtag_id': hashtag.id})
-
-        if 'location' in event_data['subj']['processed']:
-            location = DiscussionLocation(location=event_data['subj']['processed']['location'])
-            location = self.save_if_not_exist(session, location, DiscussionLocation, {'location': location.location})
-
-            if location.id:
-                publication_location = DiscussionLocationData(**{'discussion_location_id': location.id, 'count': 1,
-                                                                 'publication_doi': publication_doi})
-                self.save_or_update_count(session, publication_location, DiscussionLocationData,
-                                          {'publication_doi': publication_doi, 'discussion_location_id': location.id})
+                    publication_h = DiscussionDataPoint(
+                        **{'publication_doi': publication_doi, 'discussion_data_id': hashtag.id, 'count': 1})
+                    self.save_or_update_count(session, publication_h, DiscussionDataPoint,
+                                              {'publication_doi': publication_doi, 'discussion_data_id': hashtag.id})
 
         if 'name' in event_data['subj']['processed']:
-            author = DiscussionAuthor(author=event_data['subj']['processed']['name'])
-            author = self.save_if_not_exist(session, author, DiscussionAuthor, {'author': author.author})
+            author = DiscussionData(value=event_data['subj']['processed']['name'], type='name')
+            author = self.save_if_not_exist(session, author, DiscussionData,
+                                            {'author': author.author, 'type': 'entity'})
 
             if author.id:
-                publication_author = DiscussionAuthorData(**{'discussion_author_id': author.id, 'count': 1,
-                                                             'publication_doi': publication_doi})
-                self.save_or_update_count(session, publication_author, DiscussionAuthorData,
-                                          {'publication_doi': publication_doi, 'discussion_author_id': author.id})
+                publication_author = DiscussionDataPoint(**{'discussion_data_id': author.id, 'count': 1,
+                                                            'publication_doi': publication_doi})
+                self.save_or_update_count(session, publication_author, DiscussionDataPoint,
+                                          {'publication_doi': publication_doi, 'discussion_data_id': author.id})
+
+        if 'location' in event_data['subj']['processed']:
+            location = DiscussionData(value=event_data['subj']['processed']['location'], type='location')
+            location = self.save_if_not_exist(session, location, DiscussionData,
+                                              {'value': location.location, 'type': 'location'})
+
+            if location.id:
+                publication_location = DiscussionDataPoint(**{'discussion_data_id': location.id, 'count': 1,
+                                                              'publication_doi': publication_doi})
+                self.save_or_update_count(session, publication_location, DiscussionDataPoint,
+                                          {'publication_doi': publication_doi, 'discussion_data_id': location.id})
 
         if 'tweet_type' in event_data['subj']['processed']:
-            type = DiscussionType(type=event_data['subj']['processed']['tweet_type'])
-            type = self.save_if_not_exist(session, type, DiscussionType, {'type': type.type})
+            type = DiscussionData(value=event_data['subj']['processed']['tweet_type'], type='tweet_type')
+            type = self.save_if_not_exist(session, type, DiscussionData, {'value': type.type, 'type': 'type'})
 
             if type.id:
-                publication_type = DiscussionTypeData(**{'discussion_type_id': type.id, 'count': 1,
-                                                         'publication_doi': publication_doi})
-                self.save_or_update_count(session, publication_type, DiscussionTypeData,
-                                          {'publication_doi': publication_doi, 'discussion_type_id': type.id})
+                publication_type = DiscussionDataPoint(**{'discussion_data_id': type.id, 'count': 1,
+                                                          'publication_doi': publication_doi})
+                self.save_or_update_count(session, publication_type, DiscussionDataPoint,
+                                          {'publication_doi': publication_doi, 'discussion_data_id': type.id})
 
         if 'lang' in event_data['subj']['data']:
-            lang = DiscussionLang(lang=event_data['subj']['data']['lang'])
-            lang = self.save_if_not_exist(session, lang, DiscussionLang, {'lang': lang.lang})
+            lang = DiscussionData(value=event_data['subj']['data']['lang'], type='lang')
+            lang = self.save_if_not_exist(session, lang, DiscussionData, {'value': lang.lang, 'type': 'lang'})
 
             if lang.id:
-                publication_lang = DiscussionLangData(**{'discussion_lang_id': lang.id, 'count': 1,
-                                                         'publication_doi': publication_doi})
-                self.save_or_update_count(session, publication_lang, DiscussionLangData,
-                                          {'publication_doi': publication_doi, 'discussion_lang_id': lang.id})
+                publication_lang = DiscussionDataPoint(**{'discussion_data_id': lang.id, 'count': 1,
+                                                          'publication_doi': publication_doi})
+                self.save_or_update_count(session, publication_lang, DiscussionDataPoint,
+                                          {'publication_doi': publication_doi, 'discussion_data_id': lang.id})
 
         if 'source' in event_data['subj']['data']:
-            source = DiscussionSource(source=event_data['subj']['data']['source'])
-            source = self.save_if_not_exist(session, source, DiscussionSource, {'source': source.source})
+            source = DiscussionData(value=event_data['subj']['data']['source'], type='source')
+            source = self.save_if_not_exist(session, source, DiscussionData, {'value': source.source, 'type': 'source'})
 
             if source.id:
-                publication_source = DiscussionSourceData(**{'discussion_source_id': source.id, 'count': 1,
-                                                             'publication_doi': publication_doi})
-                self.save_or_update_count(session, publication_source, DiscussionSourceData,
-                                          {'publication_doi': publication_doi, 'discussion_source_id': source.id})
+                publication_source = DiscussionDataPoint(**{'discussion_data_id': source.id, 'count': 1,
+                                                            'publication_doi': publication_doi})
+                self.save_or_update_count(session, publication_source, DiscussionDataPoint,
+                                          {'publication_doi': publication_doi, 'discussion_data_id': source.id})
+        save_newest_discussion_subj(session, event_data)
 
         session.close()
         return True
