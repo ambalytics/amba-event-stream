@@ -256,7 +256,7 @@ class DAO(object):
             for entity_data in context_entity:
                 entity = DiscussionData(value=entity_data['entity']['name'], type='entity')
                 entity = self.save_if_not_exist(session, entity, DiscussionData,
-                                                {'value': entity.entity, 'type': 'entity'})
+                                                {'value': entity.value, 'type': 'entity'})
 
                 if entity.id:
                     publication_entity = DiscussionDataPoint(
@@ -268,7 +268,7 @@ class DAO(object):
             words = event_data['subj']['processed']['words']
             for words_data in words:
                 word = DiscussionData(value=words_data[0], type='word')
-                word = self.save_if_not_exist(session, word, DiscussionData, {'value': word.word, 'type': 'word'})
+                word = self.save_if_not_exist(session, word, DiscussionData, {'value': word.value, 'type': 'word'})
 
                 if word.id:
                     publication_words = DiscussionDataPoint(
@@ -281,7 +281,7 @@ class DAO(object):
             for h_data in hashtags:
                 hashtag = DiscussionData(value=h_data['tag'], type='hashtag')
                 hashtag = self.save_if_not_exist(session, hashtag, DiscussionData,
-                                                 {'value': hashtag.hashtag, 'type': 'hashtag'})
+                                                 {'value': hashtag.value, 'type': 'hashtag'})
 
                 if hashtag.id:
                     publication_h = DiscussionDataPoint(
@@ -292,7 +292,7 @@ class DAO(object):
         if 'name' in event_data['subj']['processed']:
             author = DiscussionData(value=event_data['subj']['processed']['name'], type='name')
             author = self.save_if_not_exist(session, author, DiscussionData,
-                                            {'author': author.author, 'type': 'entity'})
+                                            {'author': author.value, 'type': 'entity'})
 
             if author.id:
                 publication_author = DiscussionDataPoint(**{'discussion_data_id': author.id, 'count': 1,
@@ -303,7 +303,7 @@ class DAO(object):
         if 'location' in event_data['subj']['processed']:
             location = DiscussionData(value=event_data['subj']['processed']['location'], type='location')
             location = self.save_if_not_exist(session, location, DiscussionData,
-                                              {'value': location.location, 'type': 'location'})
+                                              {'value': location.value, 'type': 'location'})
 
             if location.id:
                 publication_location = DiscussionDataPoint(**{'discussion_data_id': location.id, 'count': 1,
@@ -313,7 +313,7 @@ class DAO(object):
 
         if 'tweet_type' in event_data['subj']['processed']:
             type = DiscussionData(value=event_data['subj']['processed']['tweet_type'], type='tweet_type')
-            type = self.save_if_not_exist(session, type, DiscussionData, {'value': type.type, 'type': 'type'})
+            type = self.save_if_not_exist(session, type, DiscussionData, {'value': type.value, 'type': 'type'})
 
             if type.id:
                 publication_type = DiscussionDataPoint(**{'discussion_data_id': type.id, 'count': 1,
@@ -323,7 +323,7 @@ class DAO(object):
 
         if 'lang' in event_data['subj']['data']:
             lang = DiscussionData(value=event_data['subj']['data']['lang'], type='lang')
-            lang = self.save_if_not_exist(session, lang, DiscussionData, {'value': lang.lang, 'type': 'lang'})
+            lang = self.save_if_not_exist(session, lang, DiscussionData, {'value': lang.value, 'type': 'lang'})
 
             if lang.id:
                 publication_lang = DiscussionDataPoint(**{'discussion_data_id': lang.id, 'count': 1,
@@ -333,7 +333,7 @@ class DAO(object):
 
         if 'source' in event_data['subj']['data']:
             source = DiscussionData(value=event_data['subj']['data']['source'], type='source')
-            source = self.save_if_not_exist(session, source, DiscussionData, {'value': source.source, 'type': 'source'})
+            source = self.save_if_not_exist(session, source, DiscussionData, {'value': source.value, 'type': 'source'})
 
             if source.id:
                 publication_source = DiscussionDataPoint(**{'discussion_data_id': source.id, 'count': 1,
