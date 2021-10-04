@@ -10,23 +10,6 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 
-def save_publication_not_found(session, doi):
-    obj = PublicationNotFound(
-        publication_doi=doi,
-        last_try=datetime.datetime.now(),
-    )
-
-    table = PublicationNotFound
-    kwargs = {'publication_doi': doi}
-    obj_db = DAO.get_object(session, table, kwargs)
-    if obj_db:
-        # add count to existing object
-        obj_db.last_try = datetime.datetime.now()
-        session.commit()
-        return obj_db
-
-    DAO.save_object(session, obj)
-    return obj
 
 
 def save_newest_discussion_subj(session, e):
@@ -292,7 +275,7 @@ class DAO(object):
         if 'name' in event_data['subj']['processed']:
             author = DiscussionData(value=event_data['subj']['processed']['name'], type='name')
             author = self.save_if_not_exist(session, author, DiscussionData,
-                                            {'author': author.value, 'type': 'entity'})
+                                            {'value': author.value, 'type': 'author'})
 
             if author.id:
                 publication_author = DiscussionDataPoint(**{'discussion_data_point_id': author.id, 'count': 1,
