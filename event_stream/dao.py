@@ -11,8 +11,6 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 def save_newest_discussion_subj(session, e):
-    max_count = 10
-
     entities = []
     if 'context_annotations' in e['subj']['data']:
         context_entity = e['subj']['data']['context_annotations']
@@ -41,13 +39,9 @@ def save_newest_discussion_subj(session, e):
 
     table = DiscussionNewestSubj
     key = {'publication_doi': e['obj']['data']['doi'], 'type': 'twitter'}
-    count = session.query(table).filter_by(**key).count()
+    oldest = session.query(table).filter_by(**key).order_by(DiscussionNewestSubj.created_at).first()
 
-    if count >= max_count:
-        # update oldest
-        oldest = session.query(table).filter_by(**key).order_by(DiscussionNewestSubj.created_at).first()
-        print(oldest.created_at)
-
+    if oldest:
         oldest.sub_id = obj.sub_id
         oldest.created_at = obj.created_at
         oldest.score = obj.score
@@ -294,7 +288,7 @@ class DAO(object):
         if 'name' in event_data['subj']['processed']:
             author = DiscussionData(value=event_data['subj']['processed']['name'], type='name')
             author = self.save_if_not_exist(session, author, DiscussionData,
-                                            {'value': author.value, 'type': 'author'})
+                                            {'value': author.value, 'type': 'name'})
 
             if author.id:
                 publication_author = DiscussionDataPoint(**{'discussion_data_point_id': author.id, 'count': 1,
