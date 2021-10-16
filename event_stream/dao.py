@@ -194,7 +194,6 @@ class DAO(object):
 
         logging.debug('publication.doi')
         logging.debug(publication.doi)
-        # logging.warning(publication.id)
 
         authors = publication_data['authors']
         for author_data in authors:
