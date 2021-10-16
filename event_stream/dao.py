@@ -188,7 +188,8 @@ class DAO(object):
                                   citation_count=publication_data['citation_count'],
                                   title=publication_data['title'],
                                   normalized_title=publication_data['normalized_title'],
-                                  abstract=publication_data['abstract'])
+                                  abstract=publication_data['abstract'],
+                                  license=publication_data['license'])
         publication = self.save_if_not_exist(session, publication, Publication, {'doi': publication.doi})
 
         logging.debug('publication.doi')

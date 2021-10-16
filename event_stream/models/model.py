@@ -32,6 +32,7 @@ class Publication(Base):
     title = sa.Column(sa.String())
     normalized_title = sa.Column(sa.String())
     abstract = sa.Column(sa.Text())
+    license = sa.Column(sa.String())
 
 
 class PublicationCitation(Base):
@@ -152,11 +153,11 @@ class Trending(Base):
     duration = sa.Column(sa.String())
     score = sa.Column(sa.Float())
     count = sa.Column(sa.Integer())
-    median_sentiment = sa.Column(sa.Float())
+    mean_sentiment = sa.Column(sa.Float())
     sum_followers = sa.Column(sa.Integer())
     abstract_difference = sa.Column(sa.Float())
-    median_age = sa.Column(sa.Float())
-    median_length = sa.Column(sa.Float())
+    mean_age = sa.Column(sa.Float())
+    mean_length = sa.Column(sa.Float())
     mean_questions = sa.Column(sa.Float())
     mean_exclamations = sa.Column(sa.Float())
     mean_bot_rating = sa.Column(sa.Float())
