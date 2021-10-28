@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+import sys
 import threading
 import time
 
@@ -32,18 +33,25 @@ from multiprocessing import Process, Queue, current_process, freeze_support, Poo
 # eventstreap processor process producer1, consumer2,
 
 # todo util
-def throughput_statistics(v, time_delta):
+def throughput_statistics(v, time_delta, no_throughput_counter=0):
     """show and setup in own thread repeatedly how many events are processed
-
+        restarts if counter of no throughput is 10 (10 timed eltas with no data processed)
     Arguments:
         v: the value
         time_delta: time delta we wan't to monitor
+        no_throughput_counter: counter of no throughput
     """
     logging.warning("THROUGHPUT: %d / %d" % (v.value, time_delta))
+
+    if v.value == 0:
+        no_throughput_counter += 1
+    if no_throughput_counter == 10:
+        sys.exit()  # end so it will restart clean
+
     with v.get_lock():
         v.value = 0
 
-    threading.Timer(time_delta, throughput_statistics, args=[v, time_delta]).start()
+    threading.Timer(time_delta, throughput_statistics, args=[v, time_delta, no_throughput_counter]).start()
 
 
 class EventStreamConsumer(EventStreamBase):
