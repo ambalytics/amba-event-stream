@@ -46,6 +46,7 @@ def throughput_statistics(v, time_delta, no_throughput_counter=0):
     if v.value == 0:
         no_throughput_counter += 1
     if no_throughput_counter == 10:
+        logging.warning('Exit Container because of no data throughput')
         sys.exit()  # end so it will restart clean
 
     with v.get_lock():
