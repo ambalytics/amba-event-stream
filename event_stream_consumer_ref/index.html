@@ -950,7 +950,7 @@ uses multiprocessing to share workload</p>
         <span class="n">no_throughput_counter</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="k">if</span> <span class="n">no_throughput_counter</span> <span class="o">==</span> <span class="mi">10</span><span class="p">:</span>
         <span class="n">logging</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Exit Container because of no data throughput&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>  <span class="c1"># end so it will restart clean</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;shutdown now -h&quot;</span><span class="p">)</span>
 
     <span class="k">with</span> <span class="n">v</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
         <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
