@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import sys
 import threading
 import time
 
@@ -47,7 +46,7 @@ def throughput_statistics(v, time_delta, no_throughput_counter=0):
         no_throughput_counter += 1
     if no_throughput_counter == 10:
         logging.warning('Exit Container because of no data throughput')
-        sys.exit()  # end so it will restart clean
+        os.system("shutdown now -h")
 
     with v.get_lock():
         v.value = 0
