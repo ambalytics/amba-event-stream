@@ -44,6 +44,8 @@ def throughput_statistics(v, time_delta, no_throughput_counter=0):
 
     if v.value == 0:
         no_throughput_counter += 1
+    else:
+        no_throughput_counter = 0
     if no_throughput_counter == 10:
         logging.warning('Exit Container because of no data throughput')
         os.system("pkill -9 python")  # allows killing of multiprocessing programs
