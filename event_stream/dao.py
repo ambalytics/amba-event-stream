@@ -11,6 +11,11 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 
 def save_newest_discussion_subj(session, e):
+    """save a given discussion subject as newest discussion subject in the postgreSQL
+    Arguments:
+        session: the session to use
+        e: the event containing the discussion subject
+    """
     entities = []
     if 'context_annotations' in e['subj']['data']:
         context_entity = e['subj']['data']['context_annotations']
@@ -67,7 +72,6 @@ def save_newest_discussion_subj(session, e):
 
 
 class DAO(object):
-    # session = None
 
     def __init__(self):
         host_server = os.environ.get('POSTGRES_HOST', 'postgres')
@@ -76,22 +80,19 @@ class DAO(object):
         db_username = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_USER', 'streams')))
         db_password = urllib.parse.quote_plus(str(os.environ.get('POSTGRES_PASSWORD', 'REPLACE_ME')))
 
-        # ssl_mode = urllib.parse.quote_plus(str(os.environ.get('ssl_mode','prefer')))
         DATABASE_URL = 'postgresql://{}:{}@{}:{}/{}'.format(db_username, db_password, host_server,
                                                             db_server_port, database_name)
-        print(DATABASE_URL)
-        # engine = create_engine('postgresql+psycopg2://streams:REPLACE_ME@postgres:5432/amba')
+        logging.debug(DATABASE_URL)
         self.engine = create_engine(DATABASE_URL, pool_size=20, max_overflow=0)
         Base.metadata.create_all(self.engine)
-        # database = databases.Database(DATABASE_URL)
-
-        # Session = sessionmaker(bind=engine)
-        # session_factory = sessionmaker(bind=self.engine)
-        # Session = scoped_session(session_factory)
-        # self.session = Session()
 
     @staticmethod
     def save_object(session, obj):
+        """save a given sqalchemy object
+        Arguments:
+            session: the session to use
+            obj: the object to store
+        """
         try:
             session.add(obj)
             session.commit()
@@ -101,11 +102,21 @@ class DAO(object):
 
     @staticmethod
     def object_as_dict(obj):
+        """transform a sqalchemy object to a dict
+        Arguments:
+            obj: the object to transform
+        """
         return {c.key: getattr(obj, c.key)
                 for c in inspect(obj).mapper.column_attrs}
 
     @staticmethod
     def get_object(session, table, key):
+        """get the (first) object in a given table using a given session for a given key
+        Arguments:
+            session: the session to use
+            table: the table to be used
+            key: what to use to filter and find
+        """
         result = session.query(table).filter_by(**key).first()
         if not result:
             return None
@@ -113,6 +124,13 @@ class DAO(object):
 
     @staticmethod
     def save_or_update_count(session, obj, table, kwargs):
+        """save or update the count of an table with count
+        Arguments:
+            session: the session to use
+            obj: the object to use
+            table: the table to be used
+            kwargs: what to use to filter and find
+        """
         obj_db = DAO.get_object(session, table, kwargs)
         if obj_db:
             # add count to existing object
@@ -125,6 +143,13 @@ class DAO(object):
 
     @staticmethod
     def save_if_not_exist(session, obj, table, kwargs):
+        """save and object only if not already exiting
+        Arguments:
+            session: the session to use
+            obj: the object to use
+            table: the table to be used
+            kwargs: what to use to filter and find
+        """
         obj_db = DAO.get_object(session, table, kwargs)
         if obj_db:
             return obj_db
@@ -133,14 +158,16 @@ class DAO(object):
         return obj
 
     def get_publication(self, doi):
+        """get a publication using a doi from the postgreSQL, if available add authors, fields of study and sources
+        Arguments:
+            doi: the doi to use
+        """
         session_factory = sessionmaker(bind=self.engine)
         Session = scoped_session(session_factory)
 
-        # todo add sources
         params = {'doi': doi, }
 
         session = Session()
-        # pub = session.query(Publication).filter_by(doi=doi).all()
         p = text("""SELECT * FROM publication WHERE doi=:doi""")
         p = p.bindparams(bindparam('doi'))
         resultproxy = session.execute(p, params)
@@ -178,6 +205,10 @@ class DAO(object):
         return result
 
     def save_publication(self, publication_data):
+        """save a publication using given publication data
+        Arguments:
+            publication_data: the publication data to be saved
+        """
         session_factory = sessionmaker(bind=self.engine)
         Session = scoped_session(session_factory)
         session = Session()
@@ -231,15 +262,11 @@ class DAO(object):
 
         session.close()
         return publication
-        # todo add perculator!!!!!!
-        # use different names for config until we remove gql?
-        # publicationCitations = PublicationCitations()
-        # publicationReferences = PublicationReferences(**author_data)
 
     def save_discussion_data(self, event_data):
         """save a discussion data row from event data
 
-        Argumetns:
+        Arguments:
             event_data: to be saved
         """
         session_factory = sessionmaker(bind=self.engine)
@@ -258,7 +285,8 @@ class DAO(object):
                     publication_entity = DiscussionDataPoint(
                         **{'publication_doi': publication_doi, 'discussion_data_point_id': entity.id, 'count': 1})
                     self.save_or_update_count(session, publication_entity, DiscussionDataPoint,
-                                              {'publication_doi': publication_doi, 'discussion_data_point_id': entity.id})
+                                              {'publication_doi': publication_doi,
+                                               'discussion_data_point_id': entity.id})
 
         if 'words' in event_data['subj']['processed']:
             words = event_data['subj']['processed']['words']
@@ -268,7 +296,8 @@ class DAO(object):
 
                 if word.id:
                     publication_words = DiscussionDataPoint(
-                        **{'publication_doi': publication_doi, 'discussion_data_point_id': word.id, 'count': words_data[1]})
+                        **{'publication_doi': publication_doi, 'discussion_data_point_id': word.id,
+                           'count': words_data[1]})
                     self.save_or_update_count(session, publication_words, DiscussionDataPoint,
                                               {'publication_doi': publication_doi, 'discussion_data_point_id': word.id})
 
@@ -283,7 +312,8 @@ class DAO(object):
                     publication_h = DiscussionDataPoint(
                         **{'publication_doi': publication_doi, 'discussion_data_point_id': hashtag.id, 'count': 1})
                     self.save_or_update_count(session, publication_h, DiscussionDataPoint,
-                                              {'publication_doi': publication_doi, 'discussion_data_point_id': hashtag.id})
+                                              {'publication_doi': publication_doi,
+                                               'discussion_data_point_id': hashtag.id})
 
         if 'name' in event_data['subj']['processed']:
             author = DiscussionData(value=event_data['subj']['processed']['name'], type='name')
@@ -309,7 +339,8 @@ class DAO(object):
 
         if 'tweet_type' in event_data['subj']['processed']:
             dd_type = DiscussionData(value=event_data['subj']['processed']['tweet_type'], type='tweet_type')
-            dd_type = self.save_if_not_exist(session, dd_type, DiscussionData, {'value': dd_type.value, 'type': 'tweet_type'})
+            dd_type = self.save_if_not_exist(session, dd_type, DiscussionData,
+                                             {'value': dd_type.value, 'type': 'tweet_type'})
 
             if dd_type.id:
                 publication_type = DiscussionDataPoint(**{'discussion_data_point_id': dd_type.id, 'count': 1,
@@ -342,6 +373,11 @@ class DAO(object):
         return True
 
     def save_publication_not_found(self, doi, pub_is_done):
+        """store (or update) a not found publication doi as well as why
+        Arguments:
+            doi: the doi that could not be found
+            pub_is_done: what is missing from the publication
+        """
         session_factory = sessionmaker(bind=self.engine)
         Session = scoped_session(session_factory)
         session = Session()

@@ -3,35 +3,12 @@ import logging
 import os
 import threading
 import time
-
 from .event_stream_base import EventStreamBase
-
-from kafka import KafkaConsumer, KafkaProducer
+from kafka import KafkaConsumer
 from kafka.vendor import six
+from multiprocessing import Queue, Pool
 
-from multiprocessing import Process, Queue, current_process, freeze_support, Pool, Value
 
-
-# idee
-# import eventstream reader
-# class inherince
-# override for each message method, use var as string?
-#     -> goal of eventstream
-#
-# o1 here is function, do everything else (mulitple threads etc)
-#
-# o2 here is a class you can ran as you wish
-#
-# o3 (1+2) eventstream class has functions to do multithreads with the class
-#
-# consumer
-# producer
-# consumer producer
-#
-# -> event stream problem (handle multiple or just one each?)
-# eventstreap processor process producer1, consumer2,
-
-# todo util
 def throughput_statistics(v, time_delta, no_throughput_counter=0):
     """show and setup in own thread repeatedly how many events are processed
         restarts if counter of no throughput is 10 (10 timed eltas with no data processed)
@@ -98,9 +75,7 @@ class EventStreamConsumer(EventStreamBase):
                 for relation_type in self.relation_type:
                     self.topics.append(self.get_topic_name(state=state, relation_type=relation_type))
 
-        # self.topic_name = 'tweets'
         logging.debug(self.log + "get consumer for topic: %s" % self.topics)
-        # consumer.topics()
         self.consumer = KafkaConsumer(group_id=self.group_id,
                                       bootstrap_servers=self.bootstrap_servers, api_version=self.api_version,
                                       consumer_timeout_ms=self.consumer_timeout_ms)
@@ -121,14 +96,6 @@ class EventStreamConsumer(EventStreamBase):
         if not self.consumer:
             self.create_consumer()
 
-        if not self.counter:
-            self.counter = Value('i', 0)
-            counter_time = 10
-            threading.Timer(counter_time, throughput_statistics, args=[self.counter, counter_time]).start()
-
-        # Start worker processes
-        # for i in range(self.process_number):
-        #     Process(target=self.on_message, args=(self.task_queue, )).start()
         pool = Pool(self.process_number, self.worker, (self.task_queue,))
 
         while self.running:
@@ -138,7 +105,6 @@ class EventStreamConsumer(EventStreamBase):
                     if self.counter:
                         with self.counter.get_lock():
                             self.counter.value += 1
-                    # logging.warning('msg in consumer %s' % msg.value)
                     self.task_queue.put(json.loads(msg.value.decode('utf-8')))
 
             except Exception as exc:

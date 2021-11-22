@@ -6,33 +6,6 @@ import time
 import logging
 
 
-# class Author(object):
-#
-#     url = None
-#     original_tweet_url = None
-#     original_tweet_author = None
-#     alternative_id = None
-#
-#
-# class Subject(object):
-#     # tweet data eg
-#     pid = None
-#     url = None
-#     title = None
-#     issued = None
-#     author = None
-#     data = None
-#
-#
-# class Object(object):
-#
-#     pid = None
-#     url = None
-#     method = None
-#     verification = None
-#     data = None
-
-
 class Event(object):
     """
     a representation of an json event to use
@@ -83,11 +56,6 @@ class Event(object):
             key: a valid key for the data of this event
         """
         return self.data[key]
-        # t = self.data
-        # # todo check if key exist
-        # for key in keys:
-        #     t = t[key]
-        # return t
 
     def from_json(self, json_msg):
         """set this event from json_msg
@@ -96,7 +64,6 @@ class Event(object):
             json_msg: loaded json
         """
         self.data = json_msg
-        # self.data = json.loads(json_msg)
 
     def get_json(self):
         """return this event as json
@@ -105,7 +72,6 @@ class Event(object):
         return json.dumps(self.data)
 
     def __init__(self):
-        # "timestamp":"2019-01-10T17:21:51Z",
         self.set('timestamp', '{0:%Y-%m-%dT%H:%M:%SZ}'.format(datetime.datetime.now()))
 
     def __str__(self):

@@ -3,29 +3,6 @@ import os
 import time
 
 
-# from kafka import KafkaConsumer, KafkaProducer
-
-
-# idee
-# import eventstream reader
-# class inherince
-# override for each message method, use var as string?
-#     -> goal of eventstream
-#
-# o1 here is function, do everything else (mulitple threads etc)
-#
-# o2 here is a class you can ran as you wish
-#
-# o3 (1+2) eventstream class has functions to do multithreads with the class
-#
-# consumer
-# producer
-# consumer producer
-#
-# -> event stream problem (handle multiple or just one each?)
-# eventstreap processor process producer1, consumer2,
-
-
 class EventStreamBase(object):
     """
     a base class for connecting to kafka
@@ -76,8 +53,6 @@ class EventStreamBase(object):
 
         for c_state in self.config_states:
             result.append(self.build_topic_name(c_state))
-            # print(c_state)
-            # print(self.config_states[c_state])
             if 'own_topic' in self.config_states[c_state]:
                 for c_o_topic in self.config_states[c_state]['own_topic']:
                     result.append(self.build_topic_name(c_state, c_o_topic))
@@ -124,11 +99,6 @@ class EventStreamBase(object):
             result = result + self.relation_type_separator + relation_type
         return result
 
-    # todo
-    # def load_config(self):
-    #     #data = yaml.safe_load(open('defaults.yaml'))
-    #     #data['url']
-
     def resolve_event(self, event):
         """this will resolve an event to it's respected kafka topic
 
@@ -144,5 +114,6 @@ class EventStreamBase(object):
 
     @staticmethod
     def setup_logging():
+        """logging config to be used"""
         logging.basicConfig(format="%(asctime)s: %(message)s", level=logging.WARNING, datefmt="%H:%M:%S")
 
