@@ -14,7 +14,7 @@
       
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.5">
+      <meta name="generator" content="mkdocs-1.2.3, mkdocs-material-7.3.6">
     
     
       
@@ -22,7 +22,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.cdeb8541.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.a57b2b03.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.3f5d1f46.min.css">
@@ -361,7 +361,9 @@
                 
                 <h1 id="amba-event-stream">amba-event-stream</h1>
 <p><a href="https://pypi.org/project/amba-event-stream/"><img alt="PyPI" src="https://img.shields.io/pypi/v/amba-event-stream" /></a></p>
-<p>amba analytics event stream python package that connects to kafka to produce/connect or process events.</p>
+<p>The Amba Analysis Streams package is used as a Kafka connection wrapper to abstract from infrastructure implementation details by providing functions to connect to Kafka and PostgreSQL. It defines the event model used in the streaming platform and provides base consumer and producer classes. The package is implemented as a python package that is hosted on pypi.org, and documented with mkdocs.</p>
+<p>The consumer and producer are capable of running in multiple processes to allow for parallel processing to better utilize modern CPUs. Both have built in monitoring capabilities: a counter shared by all processes is updated for each processed event. A thread running a function every few seconds is checking the counter and resetting it. If no data is processed over a defined period of time (meaning multiple consecutive check function runs), the container is restarted automatically by closing all python processed. This heart beat function ensures that even unforeseeable errors, such as container crashes or blockings are resolved by restarting the container and providing a clean system state. </p>
+<p>more Information can be found <a href="https://github.com/ambalytics/amba-analysis-streams/blob/fce56afbd7d8207b847c270ffa2c6e025dcc1950/docs/Recognition-of-Scholarly-Publication-Trends-based-on-Social-Data-Stream-Processing_Lukas-Jesche.pdf">here</a></p>
 <h1 id="installation">Installation</h1>
 <pre><code class="language-bash">pip install amba-event-stream
 </code></pre>
@@ -434,10 +436,10 @@ git push upstream --tags
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.8397ff9e.min.js", "version": null}</script>
+    <script id="__config" type="application/json">{"base": ".", "features": [], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.fcfe8b6d.min.js", "version": null}</script>
     
     
-      <script src="assets/javascripts/bundle.1e84347e.min.js"></script>
+      <script src="assets/javascripts/bundle.b1047164.min.js"></script>
       
     
   </body>
