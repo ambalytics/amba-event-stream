@@ -239,7 +239,7 @@ class DAO(object):
         if 'source_id' in publication_data:
             sources = publication_data['source_id']
             for sources_data in sources:
-                source = Source(title=sources_data['title'], url=sources_data['url'])  # todo no doi url ?
+                source = Source(title=sources_data['title'], url=sources_data['url'])
                 source = self.save_if_not_exist(session, source, Source, {'title': source.title})
 
                 if source.id:

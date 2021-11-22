@@ -1,8 +1,6 @@
 import setuptools
 import versioneer
 
-# todo test versioneer
-
 # read long_description
 with open("README.md", "r") as fh:
     long_description = fh.read()
