@@ -582,6 +582,7 @@ uses multiprocessing to share workload</p>
 
 
 
+
   <div class="doc doc-object doc-method">
 
 
@@ -607,6 +608,13 @@ uses multiprocessing to share workload</p>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">consumer</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">create_consumer</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">throughput_statistics_running</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">counter</span> <span class="o">=</span> <span class="n">Value</span><span class="p">(</span><span class="s1">&#39;i&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">counter_time</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">api_limit_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">counter_time</span><span class="p">,</span> <span class="n">throughput_statistics</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">counter</span><span class="p">,</span> <span class="n">counter_time</span><span class="p">])</span>
+        <span class="n">api_limit_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">api_limit_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 
     <span class="n">pool</span> <span class="o">=</span> <span class="n">Pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">process_number</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">worker</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">task_queue</span><span class="p">,))</span>
 
@@ -890,7 +898,7 @@ uses multiprocessing to share workload</p>
     <div class="doc doc-contents ">
 
       <p>show and setup in own thread repeatedly how many events are processed
-    restarts if counter of no throughput is 10 (10 timed eltas with no data processed)</p>
+    restarts if counter of no throughput is 10 (10 timed deltas with no data processed)</p>
 
 <p><strong>Parameters:</strong></p>
 <table>
@@ -927,7 +935,7 @@ uses multiprocessing to share workload</p>
           <summary>Source code in <code>event_stream/event_stream_consumer.py</code></summary>
           <div class="highlight"><pre><span></span><code><span class="k">def</span> <span class="nf">throughput_statistics</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">time_delta</span><span class="p">,</span> <span class="n">no_throughput_counter</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;show and setup in own thread repeatedly how many events are processed</span>
-<span class="sd">        restarts if counter of no throughput is 10 (10 timed eltas with no data processed)</span>
+<span class="sd">        restarts if counter of no throughput is 10 (10 timed deltas with no data processed)</span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        v: the value</span>
 <span class="sd">        time_delta: time delta we wan&#39;t to monitor</span>
@@ -946,7 +954,9 @@ uses multiprocessing to share workload</p>
     <span class="k">with</span> <span class="n">v</span><span class="o">.</span><span class="n">get_lock</span><span class="p">():</span>
         <span class="n">v</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span>
 
-    <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">time_delta</span><span class="p">,</span> <span class="n">throughput_statistics</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">time_delta</span><span class="p">,</span> <span class="n">no_throughput_counter</span><span class="p">])</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+    <span class="n">api_limit_thread</span> <span class="o">=</span> <span class="n">threading</span><span class="o">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">time_delta</span><span class="p">,</span> <span class="n">throughput_statistics</span><span class="p">,</span> <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="n">v</span><span class="p">,</span> <span class="n">time_delta</span><span class="p">,</span> <span class="n">no_throughput_counter</span><span class="p">])</span>
+    <span class="n">api_limit_thread</span><span class="o">.</span><span class="n">daemon</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="n">api_limit_thread</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
 </code></pre></div>
         </details>
     </div>
