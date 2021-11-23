@@ -6,12 +6,12 @@ import time
 from .event_stream_base import EventStreamBase
 from kafka import KafkaConsumer
 from kafka.vendor import six
-from multiprocessing import Queue, Pool
+from multiprocessing import Queue, Pool, Value
 
 
 def throughput_statistics(v, time_delta, no_throughput_counter=0):
     """show and setup in own thread repeatedly how many events are processed
-        restarts if counter of no throughput is 10 (10 timed eltas with no data processed)
+        restarts if counter of no throughput is 10 (10 timed deltas with no data processed)
     Arguments:
         v: the value
         time_delta: time delta we wan't to monitor
@@ -30,7 +30,9 @@ def throughput_statistics(v, time_delta, no_throughput_counter=0):
     with v.get_lock():
         v.value = 0
 
-    threading.Timer(time_delta, throughput_statistics, args=[v, time_delta, no_throughput_counter]).start()
+    api_limit_thread = threading.Timer(time_delta, throughput_statistics, args=[v, time_delta, no_throughput_counter])
+    api_limit_thread.daemon = True
+    api_limit_thread.start()
 
 
 class EventStreamConsumer(EventStreamBase):
@@ -42,6 +44,7 @@ class EventStreamConsumer(EventStreamBase):
     state = "unlinked"
     topics = False
     consumer = False
+    throughput_statistics_running = False
 
     task_queue = Queue()
     process_number = 4
@@ -95,6 +98,13 @@ class EventStreamConsumer(EventStreamBase):
 
         if not self.consumer:
             self.create_consumer()
+
+        if self.throughput_statistics_running and not self.counter:
+            self.counter = Value('i', 0)
+            counter_time = 10
+            api_limit_thread = threading.Timer(counter_time, throughput_statistics, args=[self.counter, counter_time])
+            api_limit_thread.daemon = True
+            api_limit_thread.start()
 
         pool = Pool(self.process_number, self.worker, (self.task_queue,))
 
