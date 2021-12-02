@@ -24,7 +24,7 @@ class EventStreamProducer(EventStreamBase):
         value = event.get_json()
         self.producer.send(topic_event, value=value.encode('utf-8'))
         self.producer.flush()
-        logging.warning(self.log + 'Message published successfully to topic %s' % topic_event)
+        logging.debug(self.log + 'Message published successfully to topic %s' % topic_event)
 
     def create_producer(self):
         """create the producer
